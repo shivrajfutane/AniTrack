@@ -46,6 +46,39 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Custom Anime Tracker Palette */
+  --color-anime-purple: #EEEDFE;
+  --color-anime-purple-dark: #3C3489;
+  --color-anime-purple-border: #AFA9EC;
+
+  --color-anime-teal: #E1F5EE;
+  --color-anime-teal-dark: #085041;
+  --color-anime-teal-border: #5DCAA5;
+
+  --color-anime-amber: #FAEEDA;
+  --color-anime-amber-dark: #633806;
+  --color-anime-amber-border: #EF9F27;
+
+  --color-anime-coral: #FAECE7;
+  --color-anime-coral-dark: #4A1B0C;
+  --color-anime-coral-border: #F0997B;
+
+  --color-anime-blue: #E6F1FB;
+  --color-anime-blue-dark: #0C447C;
+  --color-anime-blue-border: #85B7EB;
+
+  --color-anime-pink: #FBEAF0;
+  --color-anime-pink-dark: #4B1528;
+  --color-anime-pink-border: #ED93B1;
+
+  --color-anime-green: #EAF3DE;
+  --color-anime-green-dark: #27500A;
+  --color-anime-green-border: #97C459;
+
+  --color-anime-gray: #F1EFE8;
+  --color-anime-gray-dark: #444441;
+  --color-anime-gray-border: #B4B2A9;
 }
 
 :root {
@@ -127,4 +160,10 @@
   html {
     @apply font-sans;
   }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: translateY(100vh); opacity: 0; }
 }
