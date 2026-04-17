@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { 
   Dialog, 
   DialogContent, 
@@ -21,11 +21,13 @@ import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import { Star, Plus, Loader2, Share2, Tv } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 import { Anime } from '@/lib/jikan'
 import { AnimeStatus, upsertAnimeListItem } from '@/app/(dashboard)/actions'
 import { createActivity } from '@/app/(dashboard)/social-actions'
-import { Loader2, Share2 } from 'lucide-react'
-import { Switch } from '@/components/ui/switch'
+import Link from 'next/link'
 
 interface AddToListDialogProps {
   anime: Anime
