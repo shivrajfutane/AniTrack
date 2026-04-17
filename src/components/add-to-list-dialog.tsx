@@ -22,12 +22,13 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
-import { Star, Plus, Loader2, Share2, Tv } from 'lucide-react'
+import { Star, Plus, Loader2, Share2, Tv, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Anime } from '@/lib/jikan'
 import { AnimeStatus, upsertAnimeListItem } from '@/app/(dashboard)/actions'
 import { createActivity } from '@/app/(dashboard)/social-actions'
 import Link from 'next/link'
+import { rippleButton } from '@/lib/animations'
 
 interface AddToListDialogProps {
   anime: Anime
@@ -79,27 +80,40 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
     }
   }
 
+  const handleRipple = (e: React.MouseEvent<HTMLElement>) => {
+    rippleButton(e.currentTarget, e.nativeEvent)
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={trigger} />
-      <DialogContent className="sm:max-w-[425px] bg-[#0F172A] border-slate-800 text-[#E2E8F0] shadow-2xl">
-        <DialogHeader>
-          <DialogTitle>Add to My List</DialogTitle>
-          <DialogDescription className="text-slate-400">
-            {anime.title_english || anime.title}
-          </DialogDescription>
+      <DialogTrigger>
+        {trigger}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[480px] bg-elevated border-white/5 text-text shadow-2xl rounded-[40px] p-0 overflow-hidden">
+        <DialogHeader className="p-8 pb-0">
+          <div className="flex items-center gap-4 mb-4">
+             <div className="h-12 w-12 bg-accent/20 rounded-2xl flex items-center justify-center text-accent">
+                <Plus className="h-6 w-6" />
+             </div>
+             <div>
+                <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic">Vault Expansion</DialogTitle>
+                <DialogDescription className="text-text-subtle font-medium">
+                  {anime.title_english || anime.title}
+                </DialogDescription>
+             </div>
+          </div>
         </DialogHeader>
         
         {user ? (
-          <>
-            <div className="grid gap-6 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="status" className="text-slate-300">Status</Label>
+          <div className="p-8 space-y-8">
+            <div className="space-y-6">
+              <div className="grid gap-3">
+                <Label className="text-xs font-black uppercase tracking-widest text-accent">Deployment Status</Label>
                 <Select value={status} onValueChange={(val) => setStatus(val as AnimeStatus)}>
-                  <SelectTrigger className="bg-[#020617] border-slate-800 text-white">
+                  <SelectTrigger className="bg-surface/50 border-white/5 text-white h-14 rounded-2xl focus:ring-accent/20">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0F172A] border-slate-800 text-white">
+                  <SelectContent className="bg-elevated border-white/10 text-white rounded-2xl">
                     <SelectItem value="plan_to_watch">Plan to Watch</SelectItem>
                     <SelectItem value="watching">Watching</SelectItem>
                     <SelectItem value="completed">Completed</SelectItem>
@@ -109,81 +123,76 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
                 </Select>
               </div>
 
-              <div className="grid gap-2">
+              <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label className="text-slate-300">Episodes Watched</Label>
-                  <span className="text-xs text-anime-sky font-mono font-bold">
-                    {episodes} / {anime.episodes || '??'}
+                  <Label className="text-xs font-black uppercase tracking-widest text-accent">Temporal Progress</Label>
+                  <span className="text-sm font-black text-white font-mono">
+                    {episodes} <span className="text-white/20">/</span> {anime.episodes || '??'}
                   </span>
                 </div>
                 <Slider
                   value={[episodes]}
                   max={anime.episodes || 100}
                   step={1}
-                  onValueChange={(val) => setEpisodes(Array.isArray(val) ? val[0] : val)}
-                  className="py-4"
-                />
-                <Input 
-                  type="number" 
-                  value={episodes}
-                  onChange={(e) => setEpisodes(parseInt(e.target.value) || 0)}
-                  className="bg-[#020617] border-slate-800 text-white h-8 w-20 ml-auto"
+                  onValueChange={(val: number | readonly number[]) => setEpisodes(typeof val === 'number' ? val : val[0])}
+                  className="py-2"
                 />
               </div>
 
-              <div className="grid gap-2">
+              <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label className="text-slate-300">Your Score</Label>
-                  <span className="text-xs text-anime-teal font-bold uppercase tracking-widest">
-                    {score > 0 ? `${score}/10` : 'Not Rated'}
+                  <Label className="text-xs font-black uppercase tracking-widest text-accent">Rating Sequence</Label>
+                  <span className="text-sm font-black text-gold font-mono uppercase tracking-widest italic">
+                    {score > 0 ? `${score}.0` : 'NOT RATED'}
                   </span>
                 </div>
                 <Slider
                   value={[score]}
                   max={10}
                   step={1}
-                  onValueChange={(val) => setScore(Array.isArray(val) ? val[0] : val)}
-                  className="py-4"
+                  onValueChange={(val: number | readonly number[]) => setScore(typeof val === 'number' ? val : val[0])}
+                  className="py-2"
                 />
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-xl bg-[#020617] border border-slate-800">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-anime-sky/10 text-anime-sky">
-                    <Share2 className="h-4 w-4" />
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-surface/30 border border-white/5 group hover:bg-surface/50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-accent/10 text-accent group-hover:scale-110 transition-transform">
+                    <Share2 className="h-5 w-5" />
                   </div>
                   <div>
-                    <Label className="text-sm font-bold text-white">Share with Community</Label>
-                    <p className="text-[10px] text-slate-500">Post this update to the live feed.</p>
+                    <Label className="text-sm font-bold text-white">Share with Hive</Label>
+                    <p className="text-[10px] text-text-subtle uppercase tracking-widest font-black mt-0.5">Community Broadcast enabled</p>
                   </div>
                 </div>
                 <Switch checked={isShared} onCheckedChange={setIsShared} />
               </div>
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="pt-4">
               <Button 
-                className="w-full bg-anime-teal hover:bg-anime-teal-dark text-white border-0 font-bold shadow-lg shadow-anime-teal/20"
+                onMouseDown={handleRipple}
+                className="w-full bg-accent hover:bg-accent-dark text-white border-0 h-16 rounded-2xl font-black uppercase text-sm tracking-[0.2em] shadow-2xl shadow-accent/20 italic active:scale-95 transition-all"
                 onClick={handleSubmit}
                 disabled={loading}
               >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save to List
+                {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Plus className="mr-2 h-5 w-5" />}
+                Sync to Vault
               </Button>
             </DialogFooter>
-          </>
+          </div>
         ) : (
-          <div className="py-12 flex flex-col items-center justify-center text-center space-y-6">
-            <div className="h-16 w-16 bg-[#020617] border border-slate-800 rounded-full flex items-center justify-center">
-              <Tv className="h-8 w-8 text-anime-teal" />
+          <div className="p-12 flex flex-col items-center justify-center text-center space-y-8">
+            <div className="h-20 w-20 bg-accent/10 border border-accent/20 rounded-3xl flex items-center justify-center text-accent shadow-2xl shadow-accent/10">
+              <Tv className="h-10 w-10" />
             </div>
-            <div>
-              <h3 className="text-xl font-black text-white">Session Required</h3>
-              <p className="text-sm text-slate-400 mt-2 max-w-[200px]">Customize your list and share updates with the community.</p>
+            <div className="space-y-2">
+              <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic leading-none">Access <span className="text-accent">Denied</span></h3>
+              <p className="text-sm text-text-subtle font-medium max-w-[240px]">Authorization is required to modify temporal sequences.</p>
             </div>
             <Link href="/login" className="w-full">
-              <Button className="w-full bg-anime-teal hover:bg-anime-teal-dark font-black uppercase text-xs tracking-widest h-12 rounded-xl">
-                Initialize Session
+              <Button className="w-full bg-accent hover:bg-accent-dark text-white rounded-2xl h-16 font-black uppercase text-xs tracking-[0.2em] italic shadow-xl shadow-accent/20">
+                Initiate Session
               </Button>
             </Link>
           </div>

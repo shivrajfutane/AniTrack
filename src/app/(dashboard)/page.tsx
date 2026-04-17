@@ -14,102 +14,106 @@ export default async function DashboardPage() {
     getPersonalizedRecommendations()
   ])
 
-  const featuredAnime = seasonal.data[0] // Use the first seasonal anime as featured
+  const featuredAnime = seasonal.data[0] 
 
   return (
-    <div className="space-y-16 pb-20 max-w-7xl mx-auto px-4 lg:px-8">
+    <main id="page-root" className="min-h-screen space-y-20 pb-20 max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pt-6 md:pt-10">
       {/* Featured Hero */}
       {featuredAnime && (
-        <div className="relative rounded-[40px] overflow-hidden shadow-2xl">
+        <section className="animate-page-entry">
           <HeroSection anime={featuredAnime} />
-        </div>
+        </section>
       )}
 
       {/* DNA Recommendations (Only if available) */}
       {recommendations.length > 0 && (
-        <section className="bg-gradient-to-br from-[#14B8A6]/10 to-transparent p-8 rounded-[40px] border border-[#14B8A6]/20 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-8 text-anime-teal opacity-10 group-hover:opacity-20 transition-opacity">
+        <section className="bg-gradient-to-br from-accent/10 to-transparent p-8 md:p-12 rounded-[40px] border border-white/5 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 text-accent opacity-5 group-hover:opacity-10 transition-opacity">
             <Zap className="h-40 w-40 rotate-12" />
           </div>
-          <div className="flex items-center justify-between mb-8 relative z-10">
+          <div className="flex items-center justify-between mb-10 relative z-10">
             <div className="space-y-1">
-              <h2 className="text-3xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic">
-                <Sparkles className="h-8 w-8 text-anime-teal animate-pulse" />
-                DNA<span className="text-anime-teal">Picks</span>
+              <h2 className="text-3xl md:text-4xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic">
+                <Sparkles className="h-10 w-10 text-accent animate-pulse" />
+                DNA<span className="text-accent">Picks</span>
               </h2>
-              <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.2em]">Calculated for your sequence</p>
+              <p className="text-text-subtle font-black text-[10px] uppercase tracking-[0.3em]">Calculated for your sequence</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 overflow-x-auto pb-2 scrollbar-hide">
-            {recommendations.slice(0, 5).map((anime: any) => (
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
+            {recommendations.slice(0, 6).map((anime: any) => (
               <AnimeCard key={anime.mal_id} anime={anime} />
             ))}
           </div>
         </section>
       )}
 
-      {/* Seasonal Row */}
-      <section className="space-y-8">
+      {/* Seasonal Hits Row */}
+      <section className="space-y-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h2 className="text-3xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic">
-              Seasonal<span className="text-anime-sky">Sequence</span>
+            <h2 className="text-3xl md:text-4xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic">
+              Seasonal<span className="text-pink">Sequence</span>
             </h2>
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-anime-sky animate-ping" />
-              <span className="text-anime-sky text-[10px] font-black uppercase tracking-[0.2em] bg-anime-sky/10 px-3 py-1 rounded-full">Spring 2026 Live</span>
+              <span className="h-2 w-2 rounded-full bg-pink animate-ping" />
+              <span className="text-pink text-[10px] font-black uppercase tracking-[0.2em] bg-pink/10 px-3 py-1 rounded-full border border-pink/10">Spring 2026 Collection</span>
             </div>
           </div>
-          <Link href="/search?filter=seasonal" className="p-3 bg-[#0F172A] border border-slate-800 rounded-2xl text-slate-400 hover:text-white transition-all hover:border-anime-sky group">
+          <Link href="/search?filter=seasonal" className="p-4 bg-muted/30 border border-white/5 rounded-2xl text-text-subtle hover:text-white transition-all hover:border-pink group">
             <ChevronRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-          {seasonal.data.slice(1, 6).map((anime) => (
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
+          {seasonal.data.slice(1, 7).map((anime) => (
             <AnimeCard key={anime.mal_id} anime={anime} />
           ))}
         </div>
       </section>
 
       {/* Top Airing Row */}
-      <section className="space-y-8">
+      <section className="space-y-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h2 className="text-3xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic">
-              Peak<span className="text-anime-teal">Performance</span>
+            <h2 className="text-3xl md:text-4xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic">
+              Peak<span className="text-accent">Performance</span>
             </h2>
-            <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.2em]">Top airing globally</p>
+            <p className="text-text-subtle font-black text-[10px] uppercase tracking-[0.3em]">Top recorded broadcasts</p>
           </div>
-          <Link href="/search?filter=top" className="p-3 bg-[#0F172A] border border-slate-800 rounded-2xl text-slate-400 hover:text-white transition-all hover:border-anime-teal group">
+          <Link href="/search?filter=top" className="p-4 bg-muted/30 border border-white/5 rounded-2xl text-text-subtle hover:text-white transition-all hover:border-accent group">
             <TrendingUp className="h-6 w-6 group-hover:scale-110 transition-transform" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-          {topAiring.data.slice(0, 5).map((anime) => (
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
+          {topAiring.data.slice(0, 6).map((anime) => (
             <AnimeCard key={anime.mal_id} anime={anime} />
           ))}
         </div>
       </section>
 
-      {/* Trending Row */}
-      <section className="space-y-8">
+      {/* Trending Community Row */}
+      <section className="space-y-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h2 className="text-3xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic">
-              Community<span className="text-white/60">Pulse</span>
+            <h2 className="text-3xl md:text-4xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic">
+              Global<span className="text-white/40">Pulse</span>
             </h2>
-            <p className="text-slate-500 font-bold text-xs uppercase tracking-[0.2em]">Live trending nodes</p>
+            <p className="text-text-subtle font-black text-[10px] uppercase tracking-[0.3em]">Live node activity</p>
           </div>
-          <Link href="/search" className="p-3 bg-[#0F172A] border border-slate-800 rounded-2xl text-slate-400 hover:text-white transition-all group">
-            <Radio className="h-6 w-6 group-hover:animate-pulse transition-transform" />
+          <Link href="/search" className="p-4 bg-muted/30 border border-white/5 rounded-2xl text-text-subtle hover:text-white transition-all group">
+            <Radio className="h-6 w-6 group-hover:animate-pulse transition-transform text-white/20" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-          {trending.data.slice(0, 5).map((anime) => (
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
+          {trending.data.slice(0, 6).map((anime) => (
             <AnimeCard key={anime.mal_id} anime={anime} />
           ))}
         </div>
       </section>
-    </div>
+    </main>
   )
 }

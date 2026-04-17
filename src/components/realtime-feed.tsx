@@ -3,11 +3,12 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Activity, getGlobalFeed, getFollowingFeed } from '@/app/(dashboard)/social-actions'
-import { motion, AnimatePresence } from 'framer-motion'
-import { MessageSquare, Clock, User, ExternalLink, Loader2 } from 'lucide-react'
+import { MessageSquare, Clock, User, Radio, Loader2, Zap } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
+import { gsap } from '@/lib/gsap-config'
+import { cn } from '@/lib/utils'
 
 export function RealtimeFeed({ 
   initialActivities, 
@@ -23,6 +24,7 @@ export function RealtimeFeed({
   
   const supabase = createClient()
   const loaderRef = useRef<HTMLDivElement>(null)
+  const feedRef = useRef<HTMLDivElement>(null)
 
   // Realtime subscription
   useEffect(() => {
@@ -32,9 +34,6 @@ export function RealtimeFeed({
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'activities' },
         async (payload) => {
-          // If following, only add if the user matches our following list
-          // For simplicity, we'll re-fetch or let it be global for now
-          // Realtime payload doesn't include joins
           const { data: profile } = await supabase
             .from('profiles')
             .select('username, avatar_url')
@@ -46,7 +45,19 @@ export function RealtimeFeed({
             profiles: profile
           } as Activity
 
-          setActivities((prev) => [newActivity, ...prev])
+          setActivities((prev) => {
+            const next = [newActivity, ...prev]
+            // Animate only the first item (the new one)
+            setTimeout(() => {
+              gsap.from('.feed-item:first-child', {
+                opacity: 0,
+                x: -30,
+                duration: 0.6,
+                ease: 'power3.out'
+              })
+            }, 0)
+            return next
+          })
         }
       )
       .subscribe()
@@ -83,7 +94,6 @@ export function RealtimeFeed({
 
     if (nextActivities.length > 0) {
       setActivities(prev => {
-        // Filter out duplicates that might have been added via realtime
         const existingIds = new Set(prev.map(a => a.id))
         const uniqueNext = nextActivities.filter(a => !existingIds.has(a.id))
         return [...prev, ...uniqueNext]
@@ -94,72 +104,94 @@ export function RealtimeFeed({
   }
 
   return (
-    <div className="space-y-4">
-      <AnimatePresence initial={false}>
-        {activities.map((activity) => (
-          <motion.div
-            key={activity.id}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="group bg-slate-900/40 border border-slate-800 p-4 rounded-2xl backdrop-blur-sm hover:border-anime-purple/30 transition-colors"
-          >
-            <div className="flex gap-4">
-              <div className="relative h-10 w-10 flex-shrink-0">
-                <Image 
-                  src={activity.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${activity.profiles?.username}`} 
-                  alt={activity.profiles?.username || 'User'}
-                  fill
-                  className="rounded-full object-cover border border-slate-700"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-white hover:text-anime-teal transition-colors cursor-pointer">
-                    {activity.profiles?.username || 'User'}
-                  </span>
-                  <span className="text-slate-500 text-xs">
-                    {activity.action_type === 'added' ? 'added' : 
-                     activity.action_type === 'completed' ? 'completed' : 'updated'}
-                  </span>
-                  <Link href={`/search?q=${activity.anime_title}`}>
-                    <span className="font-bold text-anime-purple hover:underline underline-offset-4 cursor-pointer">
-                      {activity.anime_title}
-                    </span>
-                  </Link>
-                </div>
-                
-                {activity.details && (
-                  <p className="text-sm text-slate-300 mt-1 italic">"{activity.details}"</p>
-                )}
-
-                <div className="flex items-center gap-4 mt-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
-                  </span>
-                  <Link href={`/stats/${activity.user_id}`} className="flex items-center gap-1 hover:text-anime-teal transition-colors">
-                    <User className="h-3 w-3" />
-                    View DNA
-                  </Link>
-                </div>
+    <div ref={feedRef} className="space-y-6">
+      {activities.map((activity) => (
+        <div
+          key={activity.id}
+          className="feed-item group bg-surface border border-white/5 p-6 rounded-[32px] backdrop-blur-xl hover:border-accent/30 transition-all duration-500 shadow-xl"
+        >
+          <div className="flex gap-6">
+            <div className="relative h-14 w-14 flex-shrink-0">
+              <Image 
+                src={activity.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${activity.profiles?.username}`} 
+                alt={activity.profiles?.username || 'User'}
+                fill
+                className="rounded-2xl object-cover border border-white/10 shadow-lg group-hover:scale-110 transition-transform duration-500"
+              />
+              <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-accent rounded-full border-2 border-surface flex items-center justify-center">
+                 <Radio className="h-3 w-3 text-white animate-pulse" />
               </div>
             </div>
-          </motion.div>
-        ))}
-      </AnimatePresence>
+            
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap mb-1">
+                <span className="font-black text-white hover:text-accent transition-all cursor-pointer uppercase italic tracking-tighter">
+                  {activity.profiles?.username || 'Node-Alpha'}
+                </span>
+                <span className="text-text-subtle text-[10px] font-black uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-md">
+                  {activity.action_type === 'added' ? 'Archived' : 
+                   activity.action_type === 'completed' ? 'Mastered' : 'Progressed'}
+                </span>
+              </div>
+              
+              <Link href={`/search?q=${activity.anime_title}`}>
+                <h4 className="text-xl font-black text-white group-hover:text-accent transition-colors tracking-tighter uppercase italic leading-tight">
+                  {activity.anime_title}
+                </h4>
+              </Link>
+              
+              {activity.details && (
+                <div className="relative mt-3 pl-4 border-l-2 border-accent/20">
+                   <p className="text-sm text-text-muted font-medium italic">"{activity.details}"</p>
+                </div>
+              )}
 
-      <div ref={loaderRef} className="py-8 flex justify-center">
-        {loadingMore && <Loader2 className="h-6 w-6 animate-spin text-anime-purple" />}
-        {!hasMore && activities.length > 0 && <p className="text-slate-600 text-xs font-bold uppercase tracking-widest">End of the line</p>}
+              <div className="flex items-center gap-6 mt-6 text-[10px] font-black text-text-subtle uppercase tracking-[0.2em]">
+                <span className="flex items-center gap-2 group-hover:text-accent transition-colors">
+                  <Clock className="h-3.5 w-3.5" />
+                  {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
+                </span>
+                <Link href={`/stats/${activity.user_id}`} className="flex items-center gap-2 hover:text-white transition-all text-accent group-hover:translate-x-1 transition-transform">
+                  <span className="h-1 w-4 bg-accent/20 rounded-full" />
+                  View Sequence DNA
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      <div ref={loaderRef} className="py-12 flex flex-col items-center justify-center gap-4">
+        {loadingMore ? (
+          <div className="flex flex-col items-center gap-3">
+             <div className="h-1 w-20 bg-accent/10 rounded-full overflow-hidden">
+                <div className="h-full bg-accent w-full origin-left animate-shimmer" />
+             </div>
+             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-accent animate-pulse">Syncing Streams</span>
+          </div>
+        ) : (
+          !hasMore && activities.length > 0 && (
+            <div className="flex items-center gap-4 text-text-subtle/20">
+               <div className="h-[1px] w-12 bg-current" />
+               <p className="text-[10px] font-black uppercase tracking-[0.5em]">Stream Terminated</p>
+               <div className="h-[1px] w-12 bg-current" />
+            </div>
+          )
+        )}
       </div>
 
       {activities.length === 0 && !loadingMore && (
-         <div className="py-20 flex flex-col items-center justify-center text-slate-500 border-2 border-dashed border-slate-900 rounded-3xl">
-            <MessageSquare className="h-12 w-12 mb-4 opacity-10" />
-            <p>Waiting for transmissions...</p>
+         <div className="py-32 flex flex-col items-center justify-center text-text-subtle gap-8 bg-surface/40 border-2 border-dashed border-white/5 rounded-[40px]">
+            <div className="h-16 w-16 bg-accent/5 rounded-2xl flex items-center justify-center relative">
+               <div className="absolute inset-0 bg-accent/10 blur-2xl" />
+               <MessageSquare className="h-8 w-8 text-accent opacity-20" />
+            </div>
+            <div className="space-y-1 text-center">
+               <h3 className="text-xl font-black text-white italic uppercase tracking-tighter">Null Broadcast</h3>
+               <p className="text-xs font-medium">Waiting for hive transmissions...</p>
+            </div>
          </div>
       )}
     </div>
   )
 }
-

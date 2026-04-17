@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { 
   Radar, 
   RadarChart, 
@@ -14,129 +14,149 @@ import {
   Tooltip
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { TrendingUp, Clock, Star, Trophy, Target } from 'lucide-react'
+import { TrendingUp, Clock, Star, Trophy, Target, Zap, Activity } from 'lucide-react'
 import { TrackedAnime, calculateSummaryStats, getStatusDistribution, getGenreDistribution, getWatcherArchetype } from '@/lib/stats'
-import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useAnimateIn } from '@/hooks/useAnimateIn'
+import { gsap } from '@/lib/gsap-config'
+import { useGSAP } from '@gsap/react'
 
-const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444']
+const COLORS = ['#7C3AED', '#EC4899', '#F59E0B', '#10b981', '#3b82f6']
 
 export function StatsDashboard({ list }: { list: TrackedAnime[] }) {
   const summary = calculateSummaryStats(list)
   const statusData = getStatusDistribution(list)
   const genreData = getGenreDistribution(list)
   const archetype = getWatcherArchetype(list)
+  
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(() => {
+    gsap.from('.stat-card', {
+      opacity: 0,
+      y: 30,
+      stagger: 0.1,
+      duration: 0.8,
+      ease: 'power3.out',
+    })
+  }, { scope: containerRef })
 
   return (
-    <div className="space-y-12 pb-20 relative overflow-hidden">
-      {/* Dynamic Background Scanning Effect */}
-      <div className="fixed top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-anime-purple-border to-transparent z-50 pointer-events-none" 
-           style={{ animation: 'scan 4s linear infinite' }} />
-      
-      <div className="flex flex-col gap-2 relative z-10">
-        <h1 className="text-4xl font-black text-white tracking-tight flex items-center gap-4">
-          Insights & DNA
-          {list.length > 0 && (
-             <span className="h-2 w-2 rounded-full bg-anime-teal animate-ping" />
-          )}
-        </h1>
-        <p className="text-slate-400">Your anime watching habits visualized.</p>
+    <div ref={containerRef} className="space-y-16 pb-20 relative">
+      {/* Header */}
+      <div className="flex flex-col gap-3 relative z-10 animate-page-entry">
+        <div className="flex items-center gap-4">
+           <div className="h-12 w-12 bg-accent/20 rounded-2xl flex items-center justify-center text-accent border border-accent/20 shadow-xl shadow-accent/10">
+              <Activity className="h-6 w-6" />
+           </div>
+           <h1 className="text-5xl font-black text-white tracking-tighter uppercase italic">
+            Neural<span className="text-accent">Analytics</span>
+          </h1>
+        </div>
+        <p className="text-text-subtle font-medium max-w-lg">Decoding your historical broadcast consumption signatures.</p>
       </div>
 
       {/* Top Level Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard 
-          title="Days Watched" 
+          title="Days Streamed" 
           value={summary.totalDays} 
-          icon={<Clock className="text-anime-teal" />} 
-          description="Total time spent across all shows"
+          icon={<Clock className="text-accent" />} 
+          description="Total temporal displacement across segments."
         />
         <MetricCard 
-          title="Mean Score" 
+          title="Mean Rating" 
           value={summary.meanScore} 
-          icon={<Star className="text-amber-400" />} 
-          description="Your average rating across your list"
+          icon={<Star className="text-gold" />} 
+          description="Average qualitative node assessment."
         />
         <MetricCard 
-          title="Episodes" 
+          title="Packets Logged" 
           value={summary.totalEpisodes} 
-          icon={<TrendingUp className="text-anime-purple" />} 
-          description="Total count of episodes logged"
+          icon={<Zap className="text-pink" />} 
+          description="Total count of broadcast units recorded."
         />
         <MetricCard 
-          title="Archetype" 
+          title="User Archetype" 
           value={archetype.name} 
           subValue={archetype.description}
-          icon={<Trophy className="text-anime-teal" />} 
-          description="Based on your tracking behavior"
+          icon={<Trophy className="text-emerald-400" />} 
+          description="Based on tracking behavioral patterns."
+          variant="highlight"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Genre Radar Chart */}
-        <Card className="bg-slate-900/40 border-slate-800 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Target className="h-5 w-5 text-anime-purple" />
-              Genre DNA
+        <Card className="bg-surface border-white/5 shadow-2xl rounded-[40px] overflow-hidden backdrop-blur-xl">
+          <CardHeader className="p-8">
+            <CardTitle className="text-2xl font-black uppercase italic tracking-tighter text-white flex items-center gap-3">
+              <Target className="h-6 w-6 text-accent" />
+              Genre<span className="text-accent">DNA</span>
             </CardTitle>
-            <CardDescription className="text-slate-400">Analysis of your top 7 most watched genres.</CardDescription>
+            <CardDescription className="text-text-subtle font-medium">Multi-vector analysis of your consumption habits.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[400px]">
+          <CardContent className="h-[400px] p-8 pt-0">
              {genreData.length > 0 ? (
                <ResponsiveContainer width="100%" height="100%">
                 <RadarChart cx="50%" cy="50%" outerRadius="80%" data={genreData}>
-                  <PolarGrid stroke="#334155" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                  <PolarGrid stroke="rgba(255,255,255,0.05)" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700 }} />
                   <Radar
                     name="Strength"
                     dataKey="A"
-                    stroke="#8b5cf6"
-                    fill="#8b5cf6"
-                    fillOpacity={0.5}
+                    stroke="var(--color-accent)"
+                    fill="var(--color-accent)"
+                    fillOpacity={0.4}
                   />
-                  <Tooltip />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#18181B', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
                 </RadarChart>
               </ResponsiveContainer>
              ) : (
-                <div className="h-full flex items-center justify-center text-slate-500">Track more anime to see your DNA</div>
+                <div className="h-full flex flex-col items-center justify-center text-text-subtle gap-4">
+                  <Activity className="h-10 w-10 opacity-10" />
+                  <p className="text-xs font-black uppercase tracking-widest">Insufficient Data</p>
+                </div>
              )}
           </CardContent>
         </Card>
 
         {/* Status Breakdown Chart */}
-        <Card className="bg-slate-900/40 border-slate-800 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="text-white">Status Breakdown</CardTitle>
-            <CardDescription className="text-slate-400">How your library is distributed.</CardDescription>
+        <Card className="bg-surface border-white/5 shadow-2xl rounded-[40px] overflow-hidden backdrop-blur-xl">
+          <CardHeader className="p-8">
+            <CardTitle className="text-2xl font-black uppercase italic tracking-tighter text-white">Vault<span className="text-pink">Allocation</span></CardTitle>
+            <CardDescription className="text-text-subtle font-medium">Distribution of archived records by status.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[400px]">
+          <CardContent className="h-[400px] p-8 pt-0 flex flex-col items-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={statusData}
                   cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
+                  cy="45%"
+                  innerRadius={70}
+                  outerRadius={110}
+                  paddingAngle={8}
                   dataKey="value"
                 >
                   {statusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
                   ))}
                 </Pie>
                 <Tooltip 
-                   contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', color: '#fff' }}
+                   contentStyle={{ backgroundColor: '#18181B', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
                    itemStyle={{ color: '#fff' }}
                 />
               </PieChart>
             </ResponsiveContainer>
-            <div className="flex flex-wrap justify-center gap-4 mt-4">
+            <div className="flex flex-wrap justify-center gap-6 mt-4">
                {statusData.map((item, index) => (
                  <div key={item.name} className="flex items-center gap-2">
-                   <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                   <span className="text-xs text-slate-400">{item.name} ({item.value})</span>
+                   <div className="h-2 w-2 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                   <span className="text-[10px] font-black uppercase tracking-widest text-text-subtle">{item.name}</span>
                  </div>
                ))}
             </div>
@@ -151,40 +171,34 @@ function MetricCard({ title, value, subValue, icon, description, variant }: any)
   const isHighlight = variant === 'highlight'
   
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <Card className={cn(
-        "bg-slate-900/40 border-slate-800 backdrop-blur-xl transition-all duration-300 relative overflow-hidden",
-        isHighlight ? "border-anime-teal/40 shadow-[0_0_20px_rgba(93,202,165,0.1)] scale-105" : "hover:border-slate-700"
-      )}>
-        {isHighlight && (
-          <div className="absolute top-0 right-0 p-2">
-             <div className="bg-anime-teal/10 text-anime-teal text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-tighter">Unique</div>
+    <Card className={cn(
+      "stat-card bg-surface border-white/5 hover:border-accent/30 transition-all duration-500 rounded-[32px] overflow-hidden relative group shadow-xl",
+      isHighlight && "border-accent/40 bg-accent/5"
+    )}>
+      {isHighlight && (
+        <div className="absolute top-0 right-0 p-4">
+           <div className="bg-accent text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Calculated</div>
+        </div>
+      )}
+      <CardContent className="p-8">
+        <div className="flex items-start justify-between mb-8">
+          <div className={cn(
+            "p-3 rounded-2xl border transition-transform duration-500 group-hover:scale-110",
+            isHighlight ? "bg-accent text-white border-accent/20" : "bg-black/20 border-white/5"
+          )}>
+            {icon}
           </div>
-        )}
-        <CardContent className="pt-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className={cn(
-              "p-2 rounded-xl border",
-              isHighlight ? "bg-anime-teal/10 border-anime-teal/20" : "bg-slate-950 border-slate-800"
-            )}>
-              {icon}
-            </div>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{title}</p>
-            <h3 className={cn(
-              "text-3xl font-black",
-              isHighlight ? "text-anime-teal" : "text-white"
-            )}>{value}</h3>
-            {subValue && <p className="text-sm text-slate-400 font-medium leading-tight">{subValue}</p>}
-          </div>
-          <p className="text-[10px] text-slate-500 mt-4 leading-relaxed">{description}</p>
-        </CardContent>
-      </Card>
-    </motion.div>
+        </div>
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-text-subtle uppercase tracking-[0.3em]">{title}</p>
+          <h3 className={cn(
+            "text-4xl font-black italic tracking-tighter uppercase",
+            isHighlight ? "text-accent" : "text-white"
+          )}>{value}</h3>
+          {subValue && <p className="text-sm text-text-muted font-bold leading-tight line-clamp-2">{subValue}</p>}
+        </div>
+        <p className="text-[10px] text-text-subtle/60 mt-6 font-medium leading-relaxed uppercase tracking-wider">{description}</p>
+      </CardContent>
+    </Card>
   )
 }
-
