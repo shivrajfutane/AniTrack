@@ -32,7 +32,7 @@ import { rippleButton } from '@/lib/animations'
 
 interface AddToListDialogProps {
   anime: Anime
-  trigger: React.ReactNode
+  trigger: React.ReactElement
 }
 
 export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
@@ -86,9 +86,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        {trigger}
-      </DialogTrigger>
+      <DialogTrigger render={trigger} />
       <DialogContent className="sm:max-w-[480px] bg-elevated border-white/5 text-text shadow-2xl rounded-[40px] p-0 overflow-hidden">
         <DialogHeader className="p-8 pb-0">
           <div className="flex items-center gap-4 mb-4">

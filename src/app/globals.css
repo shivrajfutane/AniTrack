@@ -1,8 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -20,6 +19,29 @@
 
   --color-gold: #F59E0B;     /* score rings, star ratings */
   --color-gold-dark: #B45309;
+
+  /* ── Extended Brand ───────────────────── */
+  --color-cyan: #00D4FF;          /* neon cyan — glow accents */
+  --color-violet-dim: #3B1F7A;    /* deep violet for surfaces */
+  --color-sakura: #FF6B9D;        /* cherry blossom pink */
+  --color-gold-neon: #FFD60A;     /* bright score highlights */
+
+  /* ── Glass Surfaces ───────────────────── */
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.08);
+  --glass-blur: 16px;
+  --glass-glow: rgba(124,58,237,0.15);
+
+  /* ── Glow shadows ─────────────────────── */
+  --glow-violet: 0 0 40px rgba(124,58,237,0.4), 0 0 80px rgba(124,58,237,0.15);
+  --glow-pink: 0 0 40px rgba(236,72,153,0.4), 0 0 80px rgba(236,72,153,0.15);
+  --glow-cyan: 0 0 40px rgba(0,212,255,0.4), 0 0 80px rgba(0,212,255,0.15);
+  --glow-card: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+
+  /* ── Animation easing ─────────────────── */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 
   /* ── Surface tokens (Tailwind v4 theme extensions) ── */
   --color-surface: #111113;
@@ -163,6 +185,53 @@
   }
   .animate-page-entry {
     animation: page-entry 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+  }
+
+  .glass-elevated {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .glow-violet { box-shadow: var(--glow-violet); }
+  .glow-pink   { box-shadow: var(--glow-pink); }
+  .glow-cyan   { box-shadow: var(--glow-cyan); }
+
+  .noise-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    pointer-events: none;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #7C3AED, #EC4899, #00D4FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .scanline::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
   }
 }
 

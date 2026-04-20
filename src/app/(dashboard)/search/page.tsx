@@ -1,14 +1,14 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { Search as SearchIcon, X, SlidersHorizontal, Loader2, Zap, ArrowRight, Filter } from 'lucide-react'
+import { Search as SearchIcon, X, Loader2, Zap, ArrowRight, Filter } from 'lucide-react'
 import { jikan, Anime } from '@/lib/jikan'
 import { AnimeCard } from '@/components/anime-card'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { gsap } from '@/lib/gsap-config'
-import { useGSAP } from '@gsap/react'
+import { StaggerGrid } from '@/components/animations/StaggerGrid'
+import { useMagneticHover } from '@/hooks/animations/useMagneticHover'
+import { useTextScramble } from '@/hooks/animations/useTextScramble'
 
 export default function SearchPage() {
   const [query, setQuery] = useState('')
@@ -17,7 +17,8 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const { ref, inView } = useInView()
-  const searchContainerRef = useRef<HTMLDivElement>(null)
+  
+  const { displayText: titleText, scramble } = useTextScramble<HTMLHeadingElement>("Global Scan", "mount")
 
   const fetchResults = useCallback(async (searchQuery: string, pageNum: number, isNewSearch: boolean) => {
     if (loading) return
@@ -38,16 +39,14 @@ export default function SearchPage() {
     }
   }, [loading])
 
-  // Initial search or on query change
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1)
       fetchResults(query, 1, true)
-    }, 500) // Debounce search
+    }, 500)
     return () => clearTimeout(timer)
   }, [query, fetchResults])
 
-  // Infinite scroll
   useEffect(() => {
     if (inView && hasMore && !loading) {
       const nextPage = page + 1
@@ -56,102 +55,90 @@ export default function SearchPage() {
     }
   }, [inView, hasMore, loading, page, query, fetchResults])
 
-  useGSAP(() => {
-    if (results.length > 0) {
-      gsap.from('.anime-card', {
-        opacity: 0,
-        y: 20,
-        stagger: {
-          amount: 0.4,
-          from: 'start'
-        },
-        duration: 0.5,
-        ease: 'power2.out',
-        clearProps: 'all'
-      })
-    }
-  }, [results])
+  const magneticFilter = useMagneticHover<HTMLButtonElement>(0.2)
 
   return (
-    <main id="page-root" className="min-h-screen pb-20 max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pt-6 md:pt-10 space-y-12">
-      {/* Search Header */}
-      <div className="flex flex-col gap-10 animate-page-entry">
+    <div className="space-y-12 pb-24 max-w-[1800px] mx-auto px-4 sm:px-8 lg:px-12 pt-6 md:pt-10">
+      <div className="flex flex-col gap-10 animate-page-entry -mx-4 sm:mx-0 px-4 sm:px-0">
         <div className="space-y-3">
-          <h1 className="text-5xl font-black text-white tracking-tighter uppercase italic">
-            Global<span className="text-accent underline decoration-4 underline-offset-8">Scan</span>
+          <h1 
+            onMouseEnter={scramble}
+            className="text-5xl md:text-7xl font-black text-white tracking-tighter uppercase italic font-syne"
+          >
+            {titleText.slice(0, 7)}<span className="text-cyan drop-shadow-[0_0_20px_rgba(0,240,255,0.4)]">{titleText.slice(7)}</span>
           </h1>
-          <p className="text-text-subtle font-medium max-w-lg leading-relaxed">
+          <p className="text-text-subtle font-medium max-w-lg leading-relaxed font-spaceGrotesk">
             Query the global broadcast network for active anime signatures. 
-            <span className="text-accent ml-2">[Live Feed Active]</span>
+            <span className="text-cyan ml-2 glow-cyan">[Live Feed Active]</span>
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center gap-6 w-full">
+        <div className="flex flex-col md:flex-row items-center gap-6 w-full relative z-20">
           <div className="relative flex-1 group w-full">
-            <div className="absolute inset-0 bg-accent/20 blur-2xl opacity-0 group-focus-within:opacity-40 transition-opacity" />
-            <div className="relative flex items-center bg-surface/50 border border-white/5 rounded-3xl px-6 py-2 focus-within:border-accent focus-within:ring-4 focus-within:ring-accent/10 transition-all h-16 shadow-xl shadow-black/20 backdrop-blur-xl">
-              <SearchIcon className="h-6 w-6 text-accent mr-4" />
+            <div className="absolute inset-0 bg-cyan/20 blur-[40px] opacity-0 group-focus-within:opacity-60 transition-opacity duration-700 pointer-events-none" />
+            <div className="relative flex items-center bg-surface/50 border border-white/5 rounded-3xl px-6 py-2 focus-within:border-cyan focus-within:ring-4 focus-within:ring-cyan/20 transition-all h-20 shadow-[0_10px_40px_rgba(0,0,0,0.5)] glass-elevated">
+              <SearchIcon className="h-8 w-8 text-cyan mr-4 drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]" />
               <input
                 type="text"
-                placeholder="Query anime signatures..."
-                className="w-full bg-transparent border-none outline-none text-white text-lg font-bold placeholder:text-text-subtle/50 py-2"
+                placeholder="Query signatures..."
+                className="w-full bg-transparent border-none outline-none text-white text-2xl font-black uppercase tracking-widest italic placeholder:text-white/20 py-2 font-syne"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
               {query && (
                 <button 
                   onClick={() => setQuery('')}
-                  className="p-2 hover:bg-white/10 rounded-xl text-text-subtle hover:text-white transition-all"
+                  className="p-2 hover:bg-white/10 rounded-xl text-text-subtle hover:text-white transition-all ml-2"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-6 w-6" />
                 </button>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-4 w-full md:w-auto">
-             <Button variant="outline" className="h-16 px-8 bg-surface/50 border-white/5 text-text-subtle hover:text-white flex gap-3 rounded-3xl font-black uppercase tracking-widest text-xs italic transition-all hover:border-accent shadow-xl shadow-black/20 backdrop-blur-md">
-                <Filter className="h-5 w-5 text-accent" />
+          <div className="flex items-center w-full md:w-auto">
+             <Button 
+                ref={magneticFilter.ref as any}
+                style={magneticFilter.style as any}
+                {...magneticFilter.bind()}
+                variant="outline" 
+                className="h-20 px-8 w-full md:w-auto bg-surface/50 border-white/5 text-text-subtle hover:text-white flex gap-3 rounded-3xl font-black uppercase tracking-widest text-sm italic transition-all hover:border-cyan shadow-xl glass"
+              >
+                <Filter className="h-6 w-6 text-cyan" />
                 Parameters
              </Button>
           </div>
         </div>
 
-        {/* Quick Filters */}
-        <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 -mx-4 px-4">
-          <div className="h-10 w-10 bg-accent/10 rounded-xl border border-accent/20 flex items-center justify-center shrink-0">
-             <Zap className="h-5 w-5 text-accent" />
+        <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide py-2 max-w-full">
+          <div className="h-12 w-12 bg-cyan/10 rounded-2xl border border-cyan/20 flex items-center justify-center shrink-0 shadow-glow">
+             <Zap className="h-5 w-5 text-cyan" />
           </div>
-          {['Action', 'Adventure', 'Seinen', 'Shonen', 'Sci-Fi', 'Psychological', 'Fantasy'].map((genre) => (
+          {['Action', 'Adventure', 'Seinen', 'Shonen', 'Sci-Fi', 'Psychological', 'Fantasy', 'Romance', 'Mecha'].map((genre) => (
             <button 
               key={genre}
-              className="whitespace-nowrap px-6 py-2.5 rounded-2xl bg-muted/30 border border-white/5 text-text-subtle text-xs font-black uppercase tracking-widest hover:border-accent hover:text-accent hover:bg-accent/5 transition-all shadow-lg shadow-black/10"
+              className="whitespace-nowrap px-6 py-3 rounded-2xl bg-white/5 border border-white/5 text-text-subtle text-xs font-black uppercase tracking-[0.2em] font-spaceGrotesk hover:border-cyan hover:text-cyan hover:bg-cyan/10 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(0,240,255,0.2)] glass"
             >
               {genre}
             </button>
           ))}
-          <div className="flex items-center gap-2 pl-4 text-accent/40 font-black text-[10px] uppercase tracking-widest italic shrink-0">
+          <div className="flex items-center gap-2 pl-4 text-cyan/40 font-black text-[10px] uppercase tracking-widest italic shrink-0">
              More Vectors <ArrowRight className="h-3 w-3" />
           </div>
         </div>
       </div>
 
-      {/* Results Grid */}
-      <div 
-        ref={searchContainerRef}
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8"
-      >
+      <StaggerGrid className="grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
         {results.map((anime, index) => (
           <AnimeCard key={`${anime.mal_id}-${index}`} anime={anime} />
         ))}
-      </div>
+      </StaggerGrid>
 
-      {/* States */}
       {loading && results.length === 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
            {[...Array(12)].map((_, i) => (
-             <div key={i} className="aspect-[3/4] bg-surface/50 rounded-3xl border border-white/5 animate-pulse overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-white/5 to-transparent" />
+             <div key={i} className="aspect-[3/4] glass rounded-xl border border-white/5 animate-pulse overflow-hidden shadow-card relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5 noise-overlay mix-blend-overlay" />
              </div>
            ))}
         </div>
@@ -159,35 +146,34 @@ export default function SearchPage() {
 
       {loading && results.length > 0 && (
         <div className="flex flex-col items-center justify-center py-12 gap-4">
-          <div className="h-1 w-24 bg-accent/20 rounded-full overflow-hidden">
-             <div className="h-full bg-accent w-full origin-left animate-shimmer" />
+          <div className="h-1 w-32 bg-cyan/20 rounded-full overflow-hidden shadow-glow">
+             <div className="h-full bg-cyan w-full origin-left animate-shimmer" />
           </div>
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-accent animate-pulse">Syncing Next Batch</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan animate-pulse font-spaceGrotesk">Syncing Next Batch</p>
         </div>
       )}
 
       {!loading && results.length === 0 && query && (
          <div className="flex flex-col items-center justify-center py-40 gap-8 animate-page-entry">
-            <div className="h-24 w-24 bg-accent/5 border border-accent/10 rounded-[40px] flex items-center justify-center relative">
-               <div className="absolute inset-0 bg-accent/10 blur-3xl rounded-full" />
-               <SearchIcon className="h-10 w-10 text-accent opacity-40" />
+            <div className="h-32 w-32 bg-cyan/5 border border-cyan/10 rounded-[40px] flex items-center justify-center relative shadow-glow">
+               <div className="absolute inset-0 bg-cyan/10 blur-3xl rounded-full mix-blend-screen" />
+               <SearchIcon className="h-12 w-12 text-cyan opacity-60" />
             </div>
-            <div className="space-y-1">
-               <h3 className="text-2xl font-black text-white italic uppercase tracking-tighter">Signature Not Found</h3>
-               <p className="text-text-subtle font-medium">No archived records matching "{query}" were detected.</p>
+            <div className="space-y-1 text-center">
+               <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Signature Not Found</h3>
+               <p className="text-text-subtle font-medium font-spaceGrotesk">No archived records matching "{query}" were detected.</p>
             </div>
             <Button 
               onClick={() => setQuery('')}
               variant="outline" 
-              className="border-white/10 text-white/40 hover:text-white rounded-2xl px-8 h-12 font-black uppercase text-[10px] tracking-widest italic"
+              className="border-white/10 text-white hover:text-cyan hover:border-cyan/50 hover:bg-cyan/10 rounded-2xl px-8 h-14 font-black uppercase text-xs tracking-widest italic font-syne transition-all glass"
             >
               Reset Query
             </Button>
          </div>
       )}
 
-      {/* Sentinel for infinite scroll */}
       <div ref={ref} className="h-20" />
-    </main>
+    </div>
   )
 }

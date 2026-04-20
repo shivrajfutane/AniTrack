@@ -13,13 +13,14 @@ import {
   Calendar,
   Settings,
   Tv,
+  ChevronRight,
+  LogOut
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { 
-  gsap, 
   morphHamburger, 
   openMobileDrawer, 
   closeMobileDrawer,
@@ -27,6 +28,10 @@ import {
   rippleButton
 } from '@/lib/animations'
 import { useGSAP } from '@gsap/react'
+import { motion } from 'framer-motion'
+import { useUiStore } from '@/store/ui.store'
+import { useTextScramble } from '@/hooks/animations/useTextScramble'
+import { useMagneticHover } from '@/hooks/animations/useMagneticHover'
 
 const navItems = [
   { name: 'Discover', icon: Home, href: '/' },
@@ -41,13 +46,18 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  
+  const { sidebarExpanded, toggleSidebar } = useUiStore()
   const [user, setUser] = useState<User | null>(null)
   const supabase = createClient()
   
-  const sidebarRef = useRef<HTMLDivElement>(null)
   const navbarRef = useRef<HTMLElement>(null)
-  const drawerRef = useRef<HTMLDivElement>(null)
+  
+  const { displayText: logoText, scramble } = useTextScramble<HTMLSpanElement>("AniTrack", "mount")
+
+  useGSAP(() => {
+    animateNavbarScroll('#navbar')
+  }, { scope: navbarRef })
 
   useEffect(() => {
     const getUser = async () => {
@@ -61,13 +71,9 @@ export function Sidebar() {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [supabase.auth])
 
-  useGSAP(() => {
-    animateNavbarScroll('#navbar')
-  }, { scope: navbarRef })
-
-  const toggleMobileDrawer = () => {
+  const handleMobileToggle = () => {
     if (isMobileOpen) {
       closeMobileDrawer()
       morphHamburger(false)
@@ -84,23 +90,24 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile Navbar Overlay */}
       <nav 
         id="navbar" 
         ref={navbarRef}
-        className="md:hidden fixed top-0 w-full z-50 h-16 border-b border-white/5 flex items-center justify-between px-4 transition-all"
+        className="md:hidden fixed top-0 w-full z-50 h-[64px] border-b border-white/5 bg-[#09090B]/80 backdrop-blur-xl flex items-center justify-between px-4 transition-all"
       >
         <Link href="/" className="flex items-center gap-2">
-          <div className="h-8 w-8 bg-accent rounded-lg flex items-center justify-center shadow-lg shadow-accent/20">
+          <div className="h-8 w-8 bg-accent rounded-lg flex items-center justify-center shadow-glow">
             <Tv className="text-white h-4 w-4" />
           </div>
-          <span className="font-black text-white text-base tracking-tighter uppercase italic">
-            Ani<span className="text-accent underline decoration-2 underline-offset-4">Track</span>
+          <span 
+            className="font-black text-white text-base tracking-tighter uppercase italic font-syne"
+            onMouseEnter={scramble}
+          >
+            {logoText}
           </span>
         </Link>
-        
         <button 
-          onClick={toggleMobileDrawer}
+          onClick={handleMobileToggle}
           className="h-10 w-10 flex flex-col items-center justify-center gap-1.5 focus:outline-none"
         >
           <div id="ham-l1" className="w-6 h-0.5 bg-white rounded-full transition-all origin-center" />
@@ -109,36 +116,28 @@ export function Sidebar() {
         </button>
       </nav>
 
-      {/* Mobile Drawer */}
       <div id="mobile-drawer" className="fixed inset-0 z-[60] hidden flex">
-        <div id="drawer-backdrop" onClick={toggleMobileDrawer} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-        <div id="mobile-drawer-panel" className="relative w-72 h-full bg-elevated border-r border-white/10 flex flex-col p-6 shadow-2xl">
-          <div className="flex items-center justify-between mb-10">
-            <div className="h-10 w-10 bg-accent rounded-xl flex items-center justify-center shadow-xl shadow-accent/25">
-              <Tv className="text-white h-5 w-5" />
-            </div>
-            <button onClick={toggleMobileDrawer} className="p-2 text-white/50 hover:text-white">
-              <XIcon className="h-6 w-6" />
-            </button>
+        <div id="drawer-backdrop" onClick={handleMobileToggle} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+        <div id="mobile-drawer-panel" className="relative w-[280px] h-full bg-surface border-r border-white/10 flex flex-col p-6 shadow-2xl glass-elevated">
+          <div className="flex items-center gap-4 mb-10">
+             <div className="h-10 w-10 bg-accent rounded-xl flex items-center justify-center shadow-glow">
+               <Tv className="text-white h-5 w-5" />
+             </div>
+             <span className="font-black text-xl italic uppercase font-syne">AniTrack</span>
           </div>
-          
           <div id="drawer-links" className="flex-1 space-y-2">
             {navItems.map((item) => (
-              <Link 
-                key={item.name} 
-                href={item.href} 
-                onClick={toggleMobileDrawer}
+              <Link key={item.name} href={item.href} onClick={handleMobileToggle}
                 className={cn(
                   "flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all",
-                  pathname === item.href ? "bg-accent/10 text-accent" : "text-white/60 hover:text-white hover:bg-white/5"
+                  pathname === item.href ? "bg-accent/10 border-l-4 border-accent text-accent" : "text-white/60 hover:text-white hover:bg-white/5"
                 )}
               >
                 <item.icon className="h-5 w-5" />
-                <span>{item.name}</span>
+                <span className="font-syne">{item.name}</span>
               </Link>
             ))}
           </div>
-
           <div className="mt-auto pt-6 border-t border-white/5">
              {user ? (
                <div className="p-3 bg-white/5 rounded-2xl flex items-center gap-3">
@@ -154,8 +153,8 @@ export function Sidebar() {
                   </button>
                </div>
              ) : (
-               <Link href="/login" onClick={toggleMobileDrawer}>
-                 <Button className="w-full bg-accent hover:bg-accent-dark text-white rounded-2xl h-14 font-black uppercase tracking-[0.2em] italic">
+               <Link href="/login" onClick={handleMobileToggle}>
+                 <Button className="w-full bg-accent text-white rounded-2xl h-14 font-black uppercase font-syne italic">
                    Initiate Session
                  </Button>
                </Link>
@@ -164,128 +163,94 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Desktop Sidebar */}
-      <aside
-        ref={sidebarRef}
-        className={cn(
-          "hidden md:flex fixed inset-y-0 left-0 z-50 bg-[#09090B] border-r border-white/5 transition-all duration-500 flex-col",
-          isSidebarOpen ? "w-[260px]" : "w-[90px]"
-        )}
+      <motion.aside
+        initial={{ width: 260 }}
+        animate={{ width: sidebarExpanded ? 260 : 72 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="hidden md:flex fixed inset-y-0 left-0 z-50 bg-[#09090B] border-r border-white/5 flex-col noise-overlay"
       >
-        <div className="p-8 flex items-center justify-between">
-          <div className="flex items-center gap-4 overflow-hidden">
-            <div 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="h-12 w-12 flex-shrink-0 bg-accent rounded-2xl flex items-center justify-center shadow-xl shadow-accent/20 cursor-pointer hover:scale-105 active:scale-95 transition-all"
-            >
-              <Tv className="text-white h-6 w-6" />
+        <div className="p-4 flex items-center h-[88px] relative z-20">
+          <div className="flex items-center gap-4 overflow-hidden pl-2">
+            <div className="h-10 w-10 flex-shrink-0 bg-accent rounded-xl flex items-center justify-center shadow-glow border border-accent-light/20 relative">
+              <Tv className="text-white h-5 w-5" />
             </div>
-            {isSidebarOpen && (
-              <span className="font-black text-white text-xl tracking-tighter uppercase italic transition-all">
-                Ani<span className="text-accent">Track</span>
-              </span>
-            )}
+            <motion.span 
+              initial={{ opacity: 1 }}
+              animate={{ opacity: sidebarExpanded ? 1 : 0 }}
+              className="font-black text-xl tracking-tighter uppercase italic font-syne gradient-text whitespace-nowrap"
+            >
+              AniTrack
+            </motion.span>
           </div>
+          
+          <button onClick={toggleSidebar} className="absolute -right-4 top-8 bg-surface border border-white/10 rounded-full p-1 z-30">
+             <motion.div animate={{ rotate: sidebarExpanded ? 180 : 0 }}>
+               <ChevronRight className="h-4 w-4 text-white/60" />
+             </motion.div>
+          </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-hide">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <Link key={item.name} href={item.href}>
-                <div
-                  onMouseDown={handleRipple}
-                  className={cn(
-                    "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all relative group overflow-hidden",
-                    isActive ? "text-accent bg-accent/10" : "text-white/40 hover:text-white hover:bg-white/5"
-                  )}
-                >
-                  <item.icon className={cn(
-                    "h-5 w-5 shrink-0 transition-transform duration-300",
-                    isActive ? "scale-110" : "group-hover:scale-110"
-                  )} />
-                  {isSidebarOpen && (
-                    <span className="font-bold text-sm tracking-wide whitespace-nowrap">
-                      {item.name}
-                    </span>
-                  )}
-                  {isActive && (
-                    <div className="absolute left-0 w-1 h-6 bg-accent rounded-full" />
-                  )}
-                </div>
-              </Link>
-            )
-          })}
+        <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto scrollbar-hide relative z-20">
+          {navItems.map((item) => (
+            <NavItem key={item.name} item={item} isActive={pathname === item.href} expanded={sidebarExpanded} />
+          ))}
         </nav>
 
-        <div className="p-6 border-t border-white/5 space-y-4">
+        <div className="p-4 border-t border-white/5 space-y-4 relative z-20">
           {user ? (
-            <div className={cn(
-              "p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center gap-3 transition-all",
-              !isSidebarOpen && "bg-transparent border-transparent justify-center"
-            )}>
-              <div className="h-10 w-10 rounded-full bg-accent flex-shrink-0 flex items-center justify-center shadow-lg shadow-accent/25">
-                <span className="font-black text-white italic">{user.email?.charAt(0).toUpperCase()}</span>
+            <div className={cn("flex items-center gap-3 transition-all", sidebarExpanded ? "p-3 rounded-2xl bg-white/5 border border-white/5" : "justify-center")}>
+              <div className="h-10 w-10 relative overflow-hidden rounded-full flex-shrink-0 flex items-center justify-center bg-surface">
+                <div className="absolute inset-0 animate-spin" style={{ background: "conic-gradient(from 0deg, transparent 0 340deg, #7C3AED 360deg)" }} />
+                <div className="absolute inset-[2px] rounded-full bg-elevated flex items-center justify-center">
+                   <span className="font-black text-white italic text-sm">{user.email?.charAt(0).toUpperCase()}</span>
+                </div>
               </div>
-              {isSidebarOpen && (
+              
+              {sidebarExpanded && (
                 <div className="flex-1 min-w-0">
                   <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none mb-1">Authenticated</p>
                   <p className="text-sm font-bold text-white truncate">{user.email?.split('@')[0]}</p>
                 </div>
               )}
-              {isSidebarOpen && (
-                <button 
-                  onClick={() => supabase.auth.signOut()}
-                  className="p-2 text-white/30 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
-                >
+              {sidebarExpanded && (
+                <button onClick={() => supabase.auth.signOut()} className="p-2 text-white/30 hover:text-red-400 rounded-xl transition-all">
                   <LogOut className="h-4 w-4" />
                 </button>
               )}
             </div>
           ) : (
             <Link href="/login">
-              <Button 
-                onClick={handleRipple}
-                className={cn(
-                  "w-full bg-accent hover:bg-accent-dark text-white rounded-2xl h-14 font-black uppercase text-xs tracking-widest transition-all",
-                  !isSidebarOpen && "h-12 w-12 p-0 rounded-full"
-                )}
-              >
-                {isSidebarOpen ? "Initiate Session" : "IN"}
+              <Button onClick={handleRipple} className={cn("w-full bg-accent text-white transition-all font-syne uppercase tracking-widest italic shadow-glow", sidebarExpanded ? "h-12 rounded-xl text-xs" : "h-10 w-10 p-0 rounded-xl text-[10px]")}>
+                {sidebarExpanded ? "Initiate Session" : "IN"}
               </Button>
             </Link>
           )}
-
-          <Link href="/settings">
-            <div className={cn(
-              "flex items-center gap-4 px-4 py-4 rounded-2xl text-white/30 hover:text-white hover:bg-white/5 transition-all group",
-              !isSidebarOpen && "justify-center"
-            )}>
-              <Settings className="h-5 w-5 shrink-0 group-hover:rotate-90 transition-transform duration-500" />
-              {isSidebarOpen && <span className="font-bold text-sm">Design Suite</span>}
-            </div>
-          </Link>
         </div>
-      </aside>
+      </motion.aside>
     </>
   )
 }
 
-function XIcon(props: React.SVGProps<SVGSVGElement>) {
+function NavItem({ item, isActive, expanded }: { item: any; isActive: boolean; expanded: boolean }) {
+  const hoverProps = useMagneticHover<HTMLDivElement>(0.2)
   return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  )
-}
-
-function LogOut(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <polyline points="16 17 21 12 16 7" />
-      <line x1="21" x2="9" y1="12" y2="12" />
-    </svg>
+    <Link href={item.href}>
+      <div className={cn("flex items-center relative group h-12 rounded-xl transition-colors", isActive ? "text-white" : "text-white/40 hover:text-white")}>
+        {isActive && (
+          <motion.div layoutId="active-nav-pill" className="absolute inset-0 bg-accent/15 rounded-xl border border-accent/20" transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+        )}
+        <div ref={isActive ? undefined : hoverProps.ref as any} {...(isActive ? {} : hoverProps.bind())} className="h-12 w-12 flex items-center justify-center relative z-10 shrink-0">
+          <motion.div style={isActive ? {} : hoverProps.style as any}>
+             <item.icon className={cn("h-5 w-5 transition-transform", isActive ? "scale-110 text-accent glow-violet" : "group-hover:scale-110")} />
+          </motion.div>
+        </div>
+        {expanded && (
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-syne font-bold text-sm ml-2 relative z-10">
+            {item.name}
+          </motion.span>
+        )}
+        {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-accent rounded-r-lg shadow-glow z-10" />}
+      </div>
+    </Link>
   )
 }
