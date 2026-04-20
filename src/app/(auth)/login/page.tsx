@@ -85,14 +85,14 @@ export default function AuthPage() {
 
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-surface/50 border border-white/5 p-1.5 rounded-3xl backdrop-blur-xl h-14 relative z-20">
-            <TabsTrigger value="login" className="rounded-2xl data-[state=active]:bg-accent data-[state=active]:text-white transition-all font-black uppercase text-[10px] tracking-widest italic font-syne data-[state=active]:shadow-glow">Node Access</TabsTrigger>
-            <TabsTrigger value="signup" className="rounded-2xl data-[state=active]:bg-sakura data-[state=active]:text-white transition-all font-black uppercase text-[10px] tracking-widest italic font-syne data-[state=active]:shadow-glow">New Signature</TabsTrigger>
+            <TabsTrigger value="login" className="rounded-2xl data-[state=active]:bg-accent data-[state=active]:text-white transition-all font-black uppercase text-[10px] tracking-widest italic font-syne data-[state=active]:shadow-glow">Sign In</TabsTrigger>
+            <TabsTrigger value="signup" className="rounded-2xl data-[state=active]:bg-sakura data-[state=active]:text-white transition-all font-black uppercase text-[10px] tracking-widest italic font-syne data-[state=active]:shadow-glow">Sign Up</TabsTrigger>
           </TabsList>
 
           <TabsContent value="login" className="mt-8">
             <Card className="glass-elevated border-white/10 rounded-[40px] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-2">
               <CardHeader className="pb-4 pt-8 px-8">
-                <CardTitle className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Welcome Operator</CardTitle>
+                <CardTitle className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Welcome Back</CardTitle>
                 <CardDescription className="text-text-subtle font-medium font-spaceGrotesk">
                   Synchronize your terminal with the global feed.
                 </CardDescription>
@@ -123,7 +123,7 @@ export default function AuthPage() {
                     type="submit" 
                     className="w-full bg-accent text-white border-0 h-16 rounded-2xl font-black uppercase text-sm tracking-[0.2em] shadow-glow transition-all active:scale-95 italic font-syne hover:bg-accent-light"
                   >
-                    Initiate Link
+                    Sign In
                   </Button>
                 </CardFooter>
               </form>
@@ -133,9 +133,9 @@ export default function AuthPage() {
           <TabsContent value="signup" className="mt-8">
             <Card className="glass-elevated border-white/10 rounded-[40px] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-2">
               <CardHeader className="pb-4 pt-8 px-8">
-                <CardTitle className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">New Registry</CardTitle>
+                <CardTitle className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Create Account</CardTitle>
                 <CardDescription className="text-text-subtle font-medium font-spaceGrotesk">
-                  Establish your signature in the archival stream.
+                  Join the community to track your journey.
                 </CardDescription>
               </CardHeader>
               <form action={signup}>
@@ -161,7 +161,7 @@ export default function AuthPage() {
                     type="submit" 
                     className="w-full bg-sakura hover:bg-sakura-light text-white border-0 h-16 rounded-2xl font-black uppercase text-sm tracking-[0.2em] shadow-[0_0_20px_rgba(255,107,158,0.5)] transition-all active:scale-95 italic font-syne"
                   >
-                    Establish Node
+                    Sign Up
                   </Button>
                 </CardFooter>
               </form>
@@ -187,7 +187,7 @@ export default function AuthPage() {
               className="w-full h-14 bg-surface border-white/5 text-text-subtle hover:text-white hover:border-accent hover:bg-accent/10 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all italic font-syne"
             >
               <Globe className="mr-2 h-4 w-4 text-accent" />
-              Google Node
+              Google
             </Button>
           </form>
           <Link href="/api/auth/mal/authorize" className="w-full">
@@ -197,7 +197,7 @@ export default function AuthPage() {
               className="w-full h-14 bg-surface border-white/5 text-text-subtle hover:text-white hover:border-sakura hover:bg-sakura/10 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all italic font-syne"
             >
               <ExternalLink className="mr-2 h-4 w-4 text-sakura" />
-              MAL Archival
+              MyAnimeList
             </Button>
           </Link>
         </div>

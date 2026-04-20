@@ -64,7 +64,7 @@ export function HeroSection({ anime }: HeroSectionProps) {
         <div className="flex-1 space-y-6 max-w-3xl">
           <div className="flex items-center gap-3 opacity-0 animate-[page-entry_0.6s_ease-out_0.2s_forwards]">
              <span className="bg-accent px-4 py-1.5 rounded-full text-[10px] uppercase font-black tracking-[0.2em] text-white shadow-glow italic font-syne">
-                Prime Selection
+                Featured
              </span>
              <div className="flex items-center gap-1.5 bg-black/40 glass px-3 py-1 rounded-full border border-white/10">
                 <Star className="h-3.5 w-3.5 text-gold-neon fill-gold-neon drop-shadow-lg" />
@@ -107,7 +107,7 @@ export function HeroSection({ anime }: HeroSectionProps) {
                   className="bg-white/5 border-white/10 text-white hover:bg-white/10 glass px-8 h-14 rounded-2xl font-black uppercase text-xs tracking-widest italic flex gap-2 transition-all font-syne"
                 >
                   <Plus className="h-5 w-5" />
-                  Add to Vault
+                  Add to My List
                 </Button>
               }
             />

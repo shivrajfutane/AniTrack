@@ -153,13 +153,13 @@ export function AnimeInfoModal({ anime: initialAnime, open, onOpenChange }: Anim
                 <StatChip icon={Tv} label="Episodes" value={anime.episodes} />
               )}
               {anime.duration && (
-                <StatChip icon={Clock} label="Runtime" value={anime.duration.replace(' per ep', '').replace(' min', 'm')} />
+                <StatChip icon={Clock} label="Runtime" value={anime.duration.replace(' per ep', '')} />
               )}
               {anime.year && <StatChip icon={Calendar} label="Year" value={anime.year} />}
               {anime.popularity && <StatChip icon={TrendingUp} label="Popularity" value={`#${anime.popularity}`} />}
               {anime.rank && <StatChip icon={Award} label="Rank" value={`#${anime.rank}`} />}
               {anime.scored_by && (
-                <StatChip icon={Users} label="Votes" value={`${(anime.scored_by / 1000).toFixed(0)}K`} />
+                <StatChip icon={Users} label="Scored By" value={`${(anime.scored_by / 1000).toFixed(0)}K`} />
               )}
             </div>
 
@@ -230,7 +230,7 @@ export function AnimeInfoModal({ anime: initialAnime, open, onOpenChange }: Anim
                 trigger={
                   <Button className="flex-1 bg-accent hover:bg-accent-dark text-white border-0 h-11 rounded-xl font-black uppercase text-xs tracking-[0.15em] shadow-lg shadow-accent/20 italic">
                     <Plus className="h-4 w-4 mr-2" />
-                    Sync to Vault
+                    Add to My List
                   </Button>
                 }
               />

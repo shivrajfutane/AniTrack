@@ -36,7 +36,7 @@ export default function SearchPage() {
       setHasMore(response.pagination?.has_next_page || false)
     } catch (err: any) {
       console.error('Search error:', err)
-      setError(err.message || 'Signal lost during transmission.')
+      setError(err.message || 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -83,7 +83,7 @@ export default function SearchPage() {
               <SearchIcon className="h-8 w-8 text-cyan mr-4 drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]" />
               <input
                 type="text"
-                placeholder="Query signatures..."
+                placeholder="Search anime..."
                 className="w-full bg-transparent border-none outline-none text-white text-2xl font-black uppercase tracking-widest italic placeholder:text-white/20 py-2 font-syne"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -108,7 +108,7 @@ export default function SearchPage() {
                 className="h-20 px-8 w-full md:w-auto bg-surface/50 border-white/5 text-text-subtle hover:text-white flex gap-3 rounded-3xl font-black uppercase tracking-widest text-sm italic transition-all hover:border-cyan shadow-xl glass"
               >
                 <Filter className="h-6 w-6 text-cyan" />
-                Parameters
+                Filters
              </Button>
           </div>
         </div>
@@ -126,7 +126,7 @@ export default function SearchPage() {
             </button>
           ))}
           <div className="flex items-center gap-2 pl-4 text-cyan/40 font-black text-[10px] uppercase tracking-widest italic shrink-0">
-             More Vectors <ArrowRight className="h-3 w-3" />
+             More Genres <ArrowRight className="h-3 w-3" />
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@ export default function SearchPage() {
               <X className="h-12 w-12 text-red-500 opacity-60" />
            </div>
            <div className="space-y-2 text-center">
-              <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Static Detected</h3>
+              <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Search Error</h3>
               <p className="text-red-400/80 font-medium font-spaceGrotesk max-w-sm">{error}</p>
            </div>
            <Button 
@@ -146,7 +146,7 @@ export default function SearchPage() {
              variant="outline" 
              className="border-red-500/20 text-white hover:text-red-400 hover:border-red-500/50 hover:bg-red-500/10 rounded-2xl px-10 h-16 font-black uppercase text-xs tracking-widest italic font-syne transition-all glass"
            >
-             Re-Initiate Scan
+             Try Again
            </Button>
         </div>
       ) : (
@@ -172,20 +172,20 @@ export default function SearchPage() {
           <div className="h-1 w-32 bg-cyan/20 rounded-full overflow-hidden shadow-glow">
              <div className="h-full bg-cyan w-full origin-left animate-shimmer" />
           </div>
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan animate-pulse font-spaceGrotesk">Syncing Next Batch</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan animate-pulse font-spaceGrotesk">Loading More...</p>
         </div>
       )}
 
       {error && results.length > 0 && (
         <div className="flex flex-col items-center justify-center py-12 gap-4">
-           <p className="text-xs font-black uppercase tracking-widest text-red-400 font-syne">Data Corruption during sync</p>
+           <p className="text-xs font-black uppercase tracking-widest text-red-400 font-syne">Error loading more results</p>
            <Button 
              onClick={() => fetchResults(query, page, false)}
              size="sm"
              variant="link"
              className="text-white hover:text-cyan uppercase font-black italic tracking-widest text-[10px]"
            >
-             Retry Tail
+             Retry
            </Button>
         </div>
       )}
@@ -197,7 +197,7 @@ export default function SearchPage() {
                <SearchIcon className="h-12 w-12 text-cyan opacity-60" />
             </div>
             <div className="space-y-1 text-center">
-               <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Signature Not Found</h3>
+               <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">No Results Found</h3>
                <p className="text-text-subtle font-medium font-spaceGrotesk">No archived records matching "{query}" were detected.</p>
             </div>
             <Button 

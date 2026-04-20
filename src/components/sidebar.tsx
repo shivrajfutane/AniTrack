@@ -145,7 +145,7 @@ export function Sidebar() {
                     {user.email?.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black text-accent uppercase tracking-widest">Active Node</p>
+                    <p className="text-xs font-black text-accent uppercase tracking-widest">Logged In</p>
                     <p className="text-sm font-bold truncate text-white">{user.email?.split('@')[0]}</p>
                   </div>
                   <button onClick={() => supabase.auth.signOut()} className="p-2 text-white/40 hover:text-red-400">
@@ -155,7 +155,7 @@ export function Sidebar() {
              ) : (
                <Link href="/login" onClick={handleMobileToggle}>
                  <Button className="w-full bg-accent text-white rounded-2xl h-14 font-black uppercase font-syne italic">
-                   Initiate Session
+                   Sign In
                  </Button>
                </Link>
              )}
@@ -208,7 +208,7 @@ export function Sidebar() {
               
               {sidebarExpanded && (
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none mb-1">Authenticated</p>
+                  <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none mb-1">Signed In</p>
                   <p className="text-sm font-bold text-white truncate">{user.email?.split('@')[0]}</p>
                 </div>
               )}
@@ -221,7 +221,7 @@ export function Sidebar() {
           ) : (
             <Link href="/login">
               <Button onClick={handleRipple} className={cn("w-full bg-accent text-white transition-all font-syne uppercase tracking-widest italic shadow-glow", sidebarExpanded ? "h-12 rounded-xl text-xs" : "h-10 w-10 p-0 rounded-xl text-[10px]")}>
-                {sidebarExpanded ? "Initiate Session" : "IN"}
+                {sidebarExpanded ? "Sign In" : "IN"}
               </Button>
             </Link>
           )}

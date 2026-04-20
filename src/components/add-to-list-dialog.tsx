@@ -77,7 +77,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
       setOpen(false)
     } catch (err: any) {
       console.error('Failed to add to list:', err)
-      setError(err.message || 'Sync failed. Vault sector inaccessible.')
+      setError(err.message || 'Failed to save. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -97,7 +97,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
                 <Plus className="h-6 w-6" />
              </div>
              <div>
-                <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic">Vault Expansion</DialogTitle>
+                <DialogTitle className="text-2xl font-black uppercase tracking-tighter italic">Add to My List</DialogTitle>
                 <DialogDescription className="text-text-subtle font-medium">
                   {anime.title_english || anime.title}
                 </DialogDescription>
@@ -109,7 +109,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
           <div className="p-8 space-y-8">
             <div className="space-y-6">
               <div className="grid gap-3">
-                <Label className="text-xs font-black uppercase tracking-widest text-accent">Deployment Status</Label>
+                <Label className="text-xs font-black uppercase tracking-widest text-accent">Status</Label>
                 <Select value={status} onValueChange={(val) => setStatus(val as AnimeStatus)}>
                   <SelectTrigger className="bg-surface/50 border-white/5 text-white h-14 rounded-2xl focus:ring-accent/20">
                     <SelectValue placeholder="Select status" />
@@ -126,7 +126,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label className="text-xs font-black uppercase tracking-widest text-accent">Temporal Progress</Label>
+                  <Label className="text-xs font-black uppercase tracking-widest text-accent">Episodes Watched</Label>
                   <span className="text-sm font-black text-white font-mono">
                     {episodes} <span className="text-white/20">/</span> {anime.episodes || '??'}
                   </span>
@@ -142,7 +142,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label className="text-xs font-black uppercase tracking-widest text-accent">Rating Sequence</Label>
+                  <Label className="text-xs font-black uppercase tracking-widest text-accent">Your Rating</Label>
                   <span className="text-sm font-black text-gold font-mono uppercase tracking-widest italic">
                     {score > 0 ? `${score}.0` : 'NOT RATED'}
                   </span>
@@ -163,7 +163,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
                   </div>
                   <div>
                     <Label className="text-sm font-bold text-white">Share with Hive</Label>
-                    <p className="text-[10px] text-text-subtle uppercase tracking-widest font-black mt-0.5">Community Broadcast enabled</p>
+                    <p className="text-[10px] text-text-subtle uppercase tracking-widest font-black mt-0.5">Share update with activity feed</p>
                   </div>
                 </div>
                 <Switch checked={isShared} onCheckedChange={setIsShared} />
@@ -183,7 +183,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
                 disabled={loading}
               >
                 {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Plus className="mr-2 h-5 w-5" />}
-                Sync to Vault
+                Save to List
               </Button>
             </DialogFooter>
           </div>
@@ -194,11 +194,11 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
             </div>
             <div className="space-y-2">
               <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic leading-none">Access <span className="text-accent">Denied</span></h3>
-              <p className="text-sm text-text-subtle font-medium max-w-[240px]">Authorization is required to modify temporal sequences.</p>
+              <p className="text-sm text-text-subtle font-medium max-w-[240px]">Please sign in to track your anime and sync with your profile.</p>
             </div>
             <Link href="/login" className="w-full">
               <Button className="w-full bg-accent hover:bg-accent-dark text-white rounded-2xl h-16 font-black uppercase text-xs tracking-[0.2em] italic shadow-xl shadow-accent/20">
-                Initiate Session
+                Sign In
               </Button>
             </Link>
           </div>
