@@ -19,7 +19,7 @@ export default function SearchPage() {
   const [error, setError] = useState<string | null>(null)
   const { ref, inView } = useInView()
   
-  const { displayText: titleText, scramble } = useTextScramble<HTMLHeadingElement>("Global Scan", "mount")
+  const { displayText: titleText, scramble } = useTextScramble("SEARCH")
 
   const fetchResults = useCallback(async (searchQuery: string, pageNum: number, isNewSearch: boolean) => {
     if (loading) return
@@ -66,14 +66,10 @@ export default function SearchPage() {
         <div className="space-y-3">
           <h1 
             onMouseEnter={scramble}
-            className="text-5xl md:text-7xl font-black text-white tracking-tighter uppercase italic font-syne"
+            className="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase italic leading-[0.8] mb-4 font-syne"
           >
-            {titleText.slice(0, 7)}<span className="text-cyan drop-shadow-[0_0_20px_rgba(0,240,255,0.4)]">{titleText.slice(7)}</span>
+            {titleText}
           </h1>
-          <p className="text-text-subtle font-medium max-w-lg leading-relaxed font-spaceGrotesk">
-            Query the global broadcast network for active anime signatures. 
-            <span className="text-cyan ml-2 glow-cyan">[Live Feed Active]</span>
-          </p>
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-6 w-full relative z-20">
