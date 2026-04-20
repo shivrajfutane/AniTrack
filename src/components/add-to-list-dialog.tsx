@@ -42,6 +42,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
   const [episodes, setEpisodes] = useState(0)
   const [score, setScore] = useState(0)
   const [isShared, setIsShared] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [user, setUser] = useState<any>(null)
   const supabase = createClient()
 
@@ -51,6 +52,7 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
 
   async function handleSubmit() {
     setLoading(true)
+    setError(null)
     try {
       await upsertAnimeListItem({
         anime_id: anime.mal_id,
@@ -73,8 +75,9 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
       }
 
       setOpen(false)
-    } catch (error) {
-      console.error('Failed to add to list:', error)
+    } catch (err: any) {
+      console.error('Failed to add to list:', err)
+      setError(err.message || 'Sync failed. Vault sector inaccessible.')
     } finally {
       setLoading(false)
     }
@@ -165,6 +168,11 @@ export function AddToListDialog({ anime, trigger }: AddToListDialogProps) {
                 </div>
                 <Switch checked={isShared} onCheckedChange={setIsShared} />
               </div>
+             {error && (
+               <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest animate-pulse">
+                 {error}
+               </div>
+             )}
             </div>
 
             <DialogFooter className="pt-4">

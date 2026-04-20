@@ -74,7 +74,7 @@ export async function GET(request: Request) {
     cookieStore.delete('mal_auth_state')
     cookieStore.delete('mal_code_verifier')
 
-    return NextResponse.redirect(new URL('/dashboard?mal_connected=true', request.url))
+    return NextResponse.redirect(new URL('/?mal_connected=true', request.url))
   } catch (error) {
     console.error('MAL OAuth Flow Error:', error)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })

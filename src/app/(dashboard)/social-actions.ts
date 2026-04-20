@@ -93,7 +93,12 @@ export async function getGlobalFeed(page = 0) {
     .range(from, to)
 
   if (error) {
-    console.error('Error fetching global feed:', error)
+    console.error('Error fetching global feed:', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code
+    })
     return []
   }
 
@@ -126,7 +131,15 @@ export async function getFollowingFeed(page = 0) {
     .order('created_at', { ascending: false })
     .range(from, to)
 
-  if (error) return []
+  if (error) {
+    console.error('Error fetching following feed:', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code
+    })
+    return []
+  }
 
   return data as Activity[]
 }

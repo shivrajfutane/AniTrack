@@ -31,12 +31,17 @@ export async function upsertAnimeListItem(params: UpsertParams) {
       ...params,
       updated_at: new Date().toISOString(),
     }, {
-      onConflict: 'user_id, anime_id'
+      onConflict: 'user_id,anime_id'
     })
 
   if (error) {
-    console.error('Error upserting anime list item:', error)
-    throw new Error('Failed to update anime list')
+    console.error('[upsertAnimeListItem] Supabase error:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    })
+    throw new Error(error.message || 'Failed to update anime list')
   }
 
   revalidatePath('/my-list')

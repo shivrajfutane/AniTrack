@@ -14,8 +14,10 @@ interface FollowButtonProps {
 export function FollowButton({ followingId, initialIsFollowing }: FollowButtonProps) {
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
 
   async function handleToggle() {
+    setError(null)
     startTransition(async () => {
       const result = isFollowing 
         ? await unfollowUser(followingId) 
@@ -25,6 +27,9 @@ export function FollowButton({ followingId, initialIsFollowing }: FollowButtonPr
         setIsFollowing(!isFollowing)
       } else {
         console.error('Follow operation failed:', result.error)
+        setError(result.error || 'Sync failed')
+        // Reset error after 3 seconds
+        setTimeout(() => setError(null), 3000)
       }
     })
   }
@@ -44,6 +49,8 @@ export function FollowButton({ followingId, initialIsFollowing }: FollowButtonPr
     >
       {isPending ? (
         <Loader2 className="h-4 w-4 animate-spin" />
+      ) : error ? (
+        <span className="text-red-400 font-black animate-pulse">{error}</span>
       ) : isFollowing ? (
         <>
           <UserMinus className="h-4 w-4" /> Unfollow

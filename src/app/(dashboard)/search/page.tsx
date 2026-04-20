@@ -16,6 +16,7 @@ export default function SearchPage() {
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const { ref, inView } = useInView()
   
   const { displayText: titleText, scramble } = useTextScramble<HTMLHeadingElement>("Global Scan", "mount")
@@ -23,6 +24,7 @@ export default function SearchPage() {
   const fetchResults = useCallback(async (searchQuery: string, pageNum: number, isNewSearch: boolean) => {
     if (loading) return
     setLoading(true)
+    setError(null)
     
     try {
       const response = await jikan.searchAnime(searchQuery, pageNum)
@@ -32,8 +34,9 @@ export default function SearchPage() {
         setResults(prev => [...prev, ...response.data])
       }
       setHasMore(response.pagination?.has_next_page || false)
-    } catch (error) {
-      console.error('Search error:', error)
+    } catch (err: any) {
+      console.error('Search error:', err)
+      setError(err.message || 'Signal lost during transmission.')
     } finally {
       setLoading(false)
     }
@@ -128,11 +131,31 @@ export default function SearchPage() {
         </div>
       </div>
 
-      <StaggerGrid className="grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
-        {results.map((anime, index) => (
-          <AnimeCard key={`${anime.mal_id}-${index}`} anime={anime} />
-        ))}
-      </StaggerGrid>
+      {error && results.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-40 gap-8 animate-page-entry">
+           <div className="h-32 w-32 bg-red-500/10 border border-red-500/20 rounded-[40px] flex items-center justify-center relative shadow-[0_0_50px_rgba(239,68,68,0.2)]">
+              <div className="absolute inset-0 bg-red-500/10 blur-3xl rounded-full mix-blend-screen" />
+              <X className="h-12 w-12 text-red-500 opacity-60" />
+           </div>
+           <div className="space-y-2 text-center">
+              <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Static Detected</h3>
+              <p className="text-red-400/80 font-medium font-spaceGrotesk max-w-sm">{error}</p>
+           </div>
+           <Button 
+             onClick={() => fetchResults(query, 1, true)}
+             variant="outline" 
+             className="border-red-500/20 text-white hover:text-red-400 hover:border-red-500/50 hover:bg-red-500/10 rounded-2xl px-10 h-16 font-black uppercase text-xs tracking-widest italic font-syne transition-all glass"
+           >
+             Re-Initiate Scan
+           </Button>
+        </div>
+      ) : (
+        <StaggerGrid className="grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
+          {results.map((anime, index) => (
+            <AnimeCard key={`${anime.mal_id}-${index}`} anime={anime} />
+          ))}
+        </StaggerGrid>
+      )}
 
       {loading && results.length === 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 md:gap-8">
@@ -150,6 +173,20 @@ export default function SearchPage() {
              <div className="h-full bg-cyan w-full origin-left animate-shimmer" />
           </div>
           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan animate-pulse font-spaceGrotesk">Syncing Next Batch</p>
+        </div>
+      )}
+
+      {error && results.length > 0 && (
+        <div className="flex flex-col items-center justify-center py-12 gap-4">
+           <p className="text-xs font-black uppercase tracking-widest text-red-400 font-syne">Data Corruption during sync</p>
+           <Button 
+             onClick={() => fetchResults(query, page, false)}
+             size="sm"
+             variant="link"
+             className="text-white hover:text-cyan uppercase font-black italic tracking-widest text-[10px]"
+           >
+             Retry Tail
+           </Button>
         </div>
       )}
 

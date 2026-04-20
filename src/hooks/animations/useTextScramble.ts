@@ -28,7 +28,8 @@ export function useTextScramble<T extends HTMLElement>(text: string, trigger: 'm
       let complete = 0;
       
       for (let i = 0, n = queue.length; i < n; i++) {
-        let { from, to, start, end, char } = queue[i];
+        const { from, to, start, end } = queue[i];
+        let char = queue[i].char;
         if (frame >= end) {
           complete++;
           output += to;
