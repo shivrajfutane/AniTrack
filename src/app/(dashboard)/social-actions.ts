@@ -86,9 +86,9 @@ export async function getGlobalFeed(page = 0) {
   const from = page * 20
   const to = from + 19
   
-  const { data, error } = await supabase
+  const { data: activities, error } = await supabase
     .from('activities')
-    .select('*, profiles(username, avatar_url)')
+    .select('*')
     .order('created_at', { ascending: false })
     .range(from, to)
 
@@ -102,7 +102,21 @@ export async function getGlobalFeed(page = 0) {
     return []
   }
 
-  return data as Activity[]
+  if (!activities || activities.length === 0) return []
+
+  const userIds = [...new Set(activities.map(a => a.user_id))]
+  
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, username, avatar_url')
+    .in('id', userIds)
+
+  const profileMap = new Map(profiles?.map(p => [p.id, p]) || [])
+
+  return activities.map(activity => ({
+    ...activity,
+    profiles: profileMap.get(activity.user_id) || { username: 'Unknown User' }
+  })) as Activity[]
 }
 
 export async function getFollowingFeed(page = 0) {
@@ -124,9 +138,9 @@ export async function getFollowingFeed(page = 0) {
   const from = page * 20
   const to = from + 19
 
-  const { data, error } = await supabase
+  const { data: activities, error } = await supabase
     .from('activities')
-    .select('*, profiles(username, avatar_url)')
+    .select('*')
     .in('user_id', followingIds)
     .order('created_at', { ascending: false })
     .range(from, to)
@@ -141,6 +155,21 @@ export async function getFollowingFeed(page = 0) {
     return []
   }
 
-  return data as Activity[]
+  if (!activities || activities.length === 0) return []
+
+  // userIds here will strictly be from followingIds, but doing set is fine
+  const userIds = [...new Set(activities.map(a => a.user_id))]
+  
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, username, avatar_url')
+    .in('id', userIds)
+
+  const profileMap = new Map(profiles?.map(p => [p.id, p]) || [])
+
+  return activities.map(activity => ({
+    ...activity,
+    profiles: profileMap.get(activity.user_id) || { username: 'Unknown User' }
+  })) as Activity[]
 }
 

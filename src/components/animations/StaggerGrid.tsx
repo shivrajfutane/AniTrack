@@ -2,8 +2,7 @@
 
 import React, { useRef } from 'react'
 import { cn } from '@/lib/utils'
-import { gsap } from '@/lib/gsap-config'
-import { useGSAP } from '@gsap/react'
+import { useEffect } from 'react'
 
 interface StaggerGridProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
@@ -18,21 +17,36 @@ export function StaggerGrid({
 }: StaggerGridProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useGSAP(() => {
+  useEffect(() => {
     if (!containerRef.current) return
-    gsap.from(containerRef.current.children, {
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      stagger: staggerDelay,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: 'top 85%',
-        toggleActions: 'play none none none'
-      }
+    const children = Array.from(containerRef.current.children) as HTMLElement[]
+    
+    // Set initial custom properties for the transition duration
+    children.forEach((child) => {
+      child.style.opacity = '0'
+      child.style.transform = 'translateY(30px)'
+      child.style.transition = 'none'
     })
-  }, { scope: containerRef })
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          children.forEach((child, i) => {
+            // Apply staggered transitions
+            child.style.transition = `all 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${i * staggerDelay}s`
+            child.style.opacity = '1'
+            child.style.transform = 'translateY(0)'
+          })
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    )
+
+    observer.observe(containerRef.current)
+
+    return () => observer.disconnect()
+  }, [staggerDelay])
 
   return (
     <div ref={containerRef} className={cn("grid", className)} {...props}>

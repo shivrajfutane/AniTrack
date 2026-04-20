@@ -20,7 +20,7 @@ export function ScrollRevealSection({
   const ref = useScrollReveal<HTMLDivElement>({ y: direction === 'down' ? -offset : offset })
 
   return (
-    <section ref={ref} className={cn("will-change-transform opacity-0", className)} {...props}>
+    <section ref={ref} className={cn("will-change-transform", className)} {...props}>
       {children}
     </section>
   )

@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { login, signup, signInWithGoogle } from '@/app/auth/actions'
 import { Tv, Mail, Globe, ExternalLink, Lock } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { gsap } from '@/lib/gsap-config'
 import { useGSAP } from '@gsap/react'
 import { rippleButton } from '@/lib/animations'
@@ -74,13 +75,9 @@ export default function AuthPage() {
 
       <div className="auth-card z-10 w-full max-w-[480px] space-y-10 relative">
         <div className="flex flex-col items-center">
-          <div className="h-24 w-24 bg-accent/20 rounded-[32px] flex items-center justify-center shadow-glow border border-accent/20 mb-6 cursor-pointer hover:scale-105 transition-transform duration-500">
-            <Tv className="text-white h-10 w-10 drop-shadow-[0_0_10px_rgba(124,58,237,0.8)]" />
+          <div className="h-24 w-24 relative mb-6 cursor-pointer hover:scale-105 transition-transform duration-500">
+            <Image src="/logo-fox2.png" alt="AniTrack Mascot" fill className="object-contain drop-shadow-[0_0_15px_rgba(124,58,237,0.8)]" />
           </div>
-          <h1 className="text-5xl font-black text-white tracking-tighter text-center uppercase italic font-syne">
-            Ani<span className="text-accent gradient-text drop-shadow-[0_0_10px_rgba(124,58,237,0.5)]">Track</span>
-            <span className="block text-xs font-black text-accent-light tracking-[0.4em] uppercase mt-4 font-spaceGrotesk">Security Protocol V8.0</span>
-          </h1>
         </div>
 
         <Tabs defaultValue="login" className="w-full">

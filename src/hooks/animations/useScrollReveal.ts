@@ -1,8 +1,4 @@
 import { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export function useScrollReveal<T extends HTMLElement>(
   options?: { y?: number; duration?: number; stagger?: number; scale?: number }
@@ -13,30 +9,26 @@ export function useScrollReveal<T extends HTMLElement>(
     const el = ref.current;
     if (!el) return;
 
-    const y = options?.y ?? 40;
-    const duration = options?.duration ?? 0.8;
-    const scale = options?.scale ?? 0.96;
+    // Set initial custom properties for the transition duration
+    const duration = options?.duration ?? 0.6;
+    el.style.transition = `all ${duration}s cubic-bezier(0.16, 1, 0.3, 1)`;
+    el.style.opacity = '0';
+    el.style.transform = `translateY(${options?.y ?? 40}px) scale(${options?.scale ?? 0.98})`;
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        el,
-        { opacity: 0, y, scale },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 88%',
-            toggleActions: 'play none none none',
-          },
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0) scale(1)';
+          observer.disconnect();
         }
-      );
-    }, el);
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
 
-    return () => ctx.revert();
+    observer.observe(el);
+
+    return () => observer.disconnect();
   }, [options?.y, options?.duration, options?.scale]);
 
   return ref;

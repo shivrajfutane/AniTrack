@@ -6,37 +6,32 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Outfit', var(--font-sans);
+  --font-sans: 'Inter', var(--font-sans);
   --font-mono: 'Space Mono', var(--font-geist-mono);
   
-  /* ── Brand Palette ────────────────────── */
-  --color-accent: #7C3AED;   /* violet — primary CTA */
-  --color-accent-light: #A78BFA;
-  --color-accent-dark: #5B21B6;
-  
-  --color-pink: #EC4899;     /* secondary accent — episode badges */
-  --color-pink-dark: #BE185D;
+  /* ── Cinematic Editorial Palette ──────── */
+  --color-primary: #aacae9;
+  --color-primary-container: #4a6984;
+  --color-secondary-container: #39485c;
+  --color-tertiary: #e9c176;
 
-  --color-gold: #F59E0B;     /* score rings, star ratings */
-  --color-gold-dark: #B45309;
+  --color-surface: #111316;
+  --color-surface-container-low: #1a1c1f;
+  --color-surface-container: #1e2023;
+  --color-surface-container-highest: #333538;
+  --color-surface-bright: #3c3e41;
+  --color-on-surface: #e2e2e6;
+  --color-on-surface-variant: #c2c7cd;
+  --color-on-primary: #10334c;
+  --color-outline-variant: #42474d;
 
-  /* ── Extended Brand ───────────────────── */
-  --color-cyan: #00D4FF;          /* neon cyan — glow accents */
-  --color-violet-dim: #3B1F7A;    /* deep violet for surfaces */
-  --color-sakura: #FF6B9D;        /* cherry blossom pink */
-  --color-gold-neon: #FFD60A;     /* bright score highlights */
+  /* ── Glass & Gradients ──────────────── ── */
+  --glass-bg: rgba(60, 62, 65, 0.6); /* surface-bright at 60% */
+  --glass-border: rgba(66, 71, 77, 0.15); /* ghost border */
+  --glass-blur: 24px;
 
-  /* ── Glass Surfaces ───────────────────── */
-  --glass-bg: rgba(255,255,255,0.04);
-  --glass-border: rgba(255,255,255,0.08);
-  --glass-blur: 16px;
-  --glass-glow: rgba(124,58,237,0.15);
-
-  /* ── Glow shadows ─────────────────────── */
-  --glow-violet: 0 0 40px rgba(124,58,237,0.4), 0 0 80px rgba(124,58,237,0.15);
-  --glow-pink: 0 0 40px rgba(236,72,153,0.4), 0 0 80px rgba(236,72,153,0.15);
-  --glow-cyan: 0 0 40px rgba(0,212,255,0.4), 0 0 80px rgba(0,212,255,0.15);
-  --glow-card: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+  /* ── Ambient Shadows ────────────────── ── */
+  --shadow-ambient: 0 10px 40px rgba(17, 19, 22, 0.08); /* tinted shadow */
 
   /* ── Animation easing ─────────────────── */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -56,9 +51,9 @@
   --radius-2xl: 24px;
 
   /* ── Text Utility Colors ── */
-  --color-text: #FAFAFA;
-  --color-text-muted: #A1A1AA;
-  --color-text-subtle: #71717A;
+  --color-text: #e2e2e6;
+  --color-text-muted: #c2c7cd;
+  --color-text-subtle: #c2c7cd;
   
   /* ── Shadcn Mappings ── */
   --color-background: var(--background);
@@ -103,32 +98,32 @@
 }
 
 .dark {
-  --background: #09090B;   /* near-black */
-  --foreground: #FAFAFA;
-  --card: #111113;         /* card surface */
-  --card-foreground: #FAFAFA;
-  --popover: #18181B;      /* elevated modal backdrops */
-  --popover-foreground: #FAFAFA;
-  --primary: #7C3AED;
-  --primary-foreground: #FAFAFA;
-  --secondary: #27272A;
-  --secondary-foreground: #FAFAFA;
-  --muted: #27272A;
-  --muted-foreground: #A1A1AA;
-  --accent: #27272A;
-  --accent-foreground: #FAFAFA;
+  --background: #111316;
+  --foreground: #e2e2e6;
+  --card: #1e2023;
+  --card-foreground: #e2e2e6;
+  --popover: #333538;
+  --popover-foreground: #e2e2e6;
+  --primary: #aacae9;
+  --primary-foreground: #10334c;
+  --secondary: #1a1c1f;
+  --secondary-foreground: #e2e2e6;
+  --muted: #1e2023;
+  --muted-foreground: #c2c7cd;
+  --accent: #1e2023;
+  --accent-foreground: #e2e2e6;
   --destructive: #7F1D1D;
-  --border: rgba(255,255,255,0.07);
-  --input: #27272A;
-  --ring: #7C3AED;
+  --border: rgba(66, 71, 77, 0.15); /* Ghost Border */
+  --input: #1a1c1f;
+  --ring: #aacae9;
   
   /* Sidebar Specifics */
-  --sidebar: #09090B;
-  --sidebar-foreground: #A1A1AA;
-  --sidebar-primary: #7C3AED;
-  --sidebar-accent: #18181B;
-  --sidebar-border: rgba(255,255,255,0.07);
-  --sidebar-ring: #7C3AED;
+  --sidebar: #111316;
+  --sidebar-foreground: #c2c7cd;
+  --sidebar-primary: #aacae9;
+  --sidebar-accent: #1e2023;
+  --sidebar-border: rgba(66, 71, 77, 0.15);
+  --sidebar-ring: #aacae9;
 }
 
 @layer base {
@@ -151,17 +146,17 @@
 }
 
 ::selection {
-  background: #7C3AED;
-  color: #fff;
+  background: #aacae9;
+  color: #10334c;
 }
 
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #09090B; }
+::-webkit-scrollbar-track { background: #111316; }
 ::-webkit-scrollbar-thumb {
-  background: #27272A;
+  background: #1a1c1f;
   border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover { background: #7C3AED; }
+::-webkit-scrollbar-thumb:hover { background: #42474d; }
 
 @keyframes scan {
   0% { transform: translateY(-100%); opacity: 0; }
@@ -175,10 +170,12 @@
 
 @layer utilities {
   .shadow-card {
-    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    /* No shadows for cards on grid */
+    box-shadow: none;
   }
   .shadow-glow {
-    box-shadow: 0 0 24px rgba(124,58,237,0.3);
+    /* Glowing removed per design spec */
+    box-shadow: none;
   }
   .animate-shimmer {
     animation: shimmer 1.5s ease-in-out infinite;
@@ -191,18 +188,17 @@
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
   }
 
   .glass-elevated {
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: var(--color-surface-container-highest);
+    backdrop-filter: blur(40px);
+    box-shadow: var(--shadow-ambient);
   }
 
-  .glow-violet { box-shadow: var(--glow-violet); }
-  .glow-pink   { box-shadow: var(--glow-pink); }
-  .glow-cyan   { box-shadow: var(--glow-cyan); }
+  .ghost-border {
+    border: 1px solid var(--glass-border);
+  }
 
   .noise-overlay::after {
     content: '';
@@ -213,8 +209,13 @@
     pointer-events: none;
   }
 
+  .mask-image-linear-to-l {
+    mask-image: linear-gradient(to left, black, transparent);
+    -webkit-mask-image: linear-gradient(to left, black, transparent);
+  }
+
   .gradient-text {
-    background: linear-gradient(135deg, #7C3AED, #EC4899, #00D4FF);
+    background: linear-gradient(135deg, #aacae9, #4a6984);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

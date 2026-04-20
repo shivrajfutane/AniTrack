@@ -8,21 +8,24 @@ import { ScrollRevealSection } from '@/components/animations/ScrollRevealSection
 import { StaggerGrid } from '@/components/animations/StaggerGrid'
 
 export default async function DashboardPage() {
-  const [seasonal, topAiring, trending, recommendations] = await Promise.all([
+  const [seasonal, topAiring, trending, recommendations, actionAnime, scifiAnime, fantasyAnime] = await Promise.all([
     jikan.getSeasonalAnime(),
     jikan.getTopAnime(), 
     jikan.searchAnime('', 1),
-    getPersonalizedRecommendations()
+    getPersonalizedRecommendations(),
+    jikan.searchAnime('', 1, '1'), // Action
+    jikan.searchAnime('', 1, '24'), // Sci-Fi
+    jikan.searchAnime('', 1, '10') // Fantasy
   ])
 
-  const featuredAnime = seasonal.data[0] 
+  const featuredAnimeList = trending.data.slice(0, 10) 
 
   return (
     <div className="space-y-24 pb-24 max-w-[1800px] mx-auto px-4 sm:px-8 lg:px-12 pt-6 md:pt-10">
       {/* Featured Hero */}
-      {featuredAnime && (
+      {featuredAnimeList && featuredAnimeList.length > 0 && (
         <section className="animate-page-entry -mx-4 sm:mx-0">
-          <HeroSection anime={featuredAnime} />
+          <HeroSection animeList={featuredAnimeList} />
         </section>
       )}
 
@@ -35,11 +38,11 @@ export default async function DashboardPage() {
           
           <div className="flex items-center justify-between mb-10 relative z-10">
             <div className="space-y-1">
-              <h2 className="text-3xl md:text-5xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic font-syne">
-                <Sparkles className="h-10 w-10 text-accent glow-violet" />
-                DNA<span className="text-accent gradient-text">Picks</span>
+              <h2 className="text-3xl md:text-5xl font-black text-on-surface flex items-center gap-3 tracking-tight font-sans">
+                <Sparkles className="h-10 w-10 text-primary" />
+                DNA<span className="text-primary">Picks</span>
               </h2>
-              <p className="text-accent-light font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] pl-1 font-spaceGrotesk">Calculated for your sequence</p>
+              <p className="text-on-surface-variant font-bold text-[10px] sm:text-xs uppercase tracking-[0.3em] pl-1 font-sans">Calculated for your sequence</p>
             </div>
           </div>
           
@@ -55,19 +58,19 @@ export default async function DashboardPage() {
 
       {/* Seasonal Hits Row */}
       <ScrollRevealSection className="space-y-10">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between border-b border-outline-variant/15 pb-4">
           <div className="space-y-1">
-            <h2 className="text-3xl md:text-5xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic font-syne">
-              Seasonal<span className="text-sakura drop-shadow-[0_0_15px_rgba(255,107,158,0.5)]">Sequence</span>
+            <h2 className="text-3xl md:text-5xl font-black text-on-surface flex items-center gap-3 tracking-tight font-sans">
+              Seasonal Hits
             </h2>
             <div className="flex items-center gap-2 pl-1">
-              <span className="h-2 w-2 rounded-full bg-sakura animate-ping shadow-[0_0_10px_#FF6B9E]" />
-              <span className="text-sakura text-[10px] font-black uppercase tracking-[0.2em] bg-sakura/10 px-3 py-1 rounded-full border border-sakura/20 font-spaceGrotesk">
-                Spring 2026 Collection
+              <span className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-none" />
+              <span className="text-primary text-[10px] font-bold uppercase tracking-widest bg-primary-container/30 px-3 py-1 rounded-full border border-primary/20 font-sans">
+                Latest Collection
               </span>
             </div>
           </div>
-          <Link href="/search?filter=seasonal" className="p-4 bg-muted/30 border border-white/5 rounded-2xl text-text-subtle hover:text-white transition-all hover:border-sakura hover:shadow-[0_0_20px_rgba(255,107,158,0.3)] glass group hidden sm:block">
+          <Link href="/search?filter=seasonal" className="p-4 bg-surface-container border border-outline-variant/15 rounded-[12px] text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all group hidden sm:block">
             <ChevronRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -80,15 +83,15 @@ export default async function DashboardPage() {
       </ScrollRevealSection>
 
       {/* Top Airing Row */}
-      <ScrollRevealSection className="space-y-10">
-        <div className="flex items-center justify-between">
+      <ScrollRevealSection className="space-y-10 mt-16">
+        <div className="flex items-center justify-between border-b border-outline-variant/15 pb-4">
           <div className="space-y-1">
-            <h2 className="text-3xl md:text-5xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic font-syne">
-              Peak<span className="text-cyan drop-shadow-[0_0_15px_rgba(0,240,255,0.5)]">Performance</span>
+            <h2 className="text-3xl md:text-5xl font-black text-on-surface flex items-center gap-3 tracking-tight font-sans">
+              Peak Performance
             </h2>
-            <p className="text-text-subtle font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] font-spaceGrotesk pl-1">Top recorded broadcasts</p>
+            <p className="text-on-surface-variant font-bold text-[10px] sm:text-xs uppercase tracking-[0.3em] font-sans pl-1">Top recorded broadcasts</p>
           </div>
-          <Link href="/search?filter=top" className="p-4 bg-muted/30 border border-white/5 rounded-2xl text-text-subtle hover:text-white transition-all hover:border-cyan hover:shadow-[0_0_20px_rgba(0,240,255,0.3)] glass group hidden sm:block">
+          <Link href="/search?filter=top" className="p-4 bg-surface-container border border-outline-variant/15 rounded-[12px] text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all group hidden sm:block">
             <TrendingUp className="h-6 w-6 group-hover:scale-110 transition-transform" />
           </Link>
         </div>
@@ -101,21 +104,84 @@ export default async function DashboardPage() {
       </ScrollRevealSection>
 
       {/* Trending Community Row */}
-      <ScrollRevealSection className="space-y-10">
-        <div className="flex items-center justify-between">
+      <ScrollRevealSection className="space-y-10 mt-16">
+        <div className="flex items-center justify-between border-b border-outline-variant/15 pb-4">
           <div className="space-y-1">
-            <h2 className="text-3xl md:text-5xl font-black text-white flex items-center gap-3 uppercase tracking-tighter italic font-syne">
-              Global<span className="text-white/40">Pulse</span>
+            <h2 className="text-3xl md:text-5xl font-black text-on-surface flex items-center gap-3 tracking-tight font-sans">
+              Global Pulse
             </h2>
-            <p className="text-text-subtle font-black text-[10px] sm:text-xs uppercase tracking-[0.3em] font-spaceGrotesk pl-1">Live node activity</p>
+            <p className="text-on-surface-variant font-bold text-[10px] sm:text-xs uppercase tracking-[0.3em] font-sans pl-1">Live node activity</p>
           </div>
-          <Link href="/search" className="p-4 bg-muted/30 border border-white/5 rounded-2xl text-text-subtle hover:text-white transition-all glass group hidden sm:block">
-            <Radio className="h-6 w-6 group-hover:animate-pulse transition-transform text-white/40 group-hover:text-white" />
+          <Link href="/search" className="p-4 bg-surface-container border border-outline-variant/15 rounded-[12px] text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all group hidden sm:block">
+            <Radio className="h-6 w-6 group-hover:animate-pulse transition-transform" />
           </Link>
         </div>
         
         <StaggerGrid className="grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-6 md:gap-8">
           {trending.data.slice(0, 6).map((anime) => (
+            <AnimeCard key={anime.mal_id} anime={anime} />
+          ))}
+        </StaggerGrid>
+      </ScrollRevealSection>
+
+      {/* Action Row */}
+      <ScrollRevealSection className="space-y-10 mt-16">
+        <div className="flex items-center justify-between border-b border-outline-variant/15 pb-4">
+          <div className="space-y-1">
+            <h2 className="text-3xl md:text-5xl font-black text-on-surface flex items-center gap-3 tracking-tight font-sans">
+              High-Octane Action
+            </h2>
+            <p className="text-on-surface-variant font-bold text-[10px] sm:text-xs uppercase tracking-[0.3em] font-sans pl-1">Heart-pounding combat & adventure</p>
+          </div>
+          <Link href="/search?genres=1" className="p-4 bg-surface-container border border-outline-variant/15 rounded-[12px] text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all group hidden sm:block">
+            <ChevronRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+        
+        <StaggerGrid className="grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-6 md:gap-8">
+          {actionAnime.data.slice(0, 6).map((anime) => (
+            <AnimeCard key={anime.mal_id} anime={anime} />
+          ))}
+        </StaggerGrid>
+      </ScrollRevealSection>
+
+      {/* Sci-Fi Row */}
+      <ScrollRevealSection className="space-y-10 mt-16">
+        <div className="flex items-center justify-between border-b border-outline-variant/15 pb-4">
+          <div className="space-y-1">
+            <h2 className="text-3xl md:text-5xl font-black text-on-surface flex items-center gap-3 tracking-tight font-sans">
+              Sci-Fi & Cybernetics
+            </h2>
+            <p className="text-on-surface-variant font-bold text-[10px] sm:text-xs uppercase tracking-[0.3em] font-sans pl-1">Futures beyond imagination</p>
+          </div>
+          <Link href="/search?genres=24" className="p-4 bg-surface-container border border-outline-variant/15 rounded-[12px] text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all group hidden sm:block">
+            <ChevronRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+        
+        <StaggerGrid className="grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-6 md:gap-8">
+          {scifiAnime.data.slice(0, 6).map((anime) => (
+            <AnimeCard key={anime.mal_id} anime={anime} />
+          ))}
+        </StaggerGrid>
+      </ScrollRevealSection>
+
+      {/* Fantasy Row */}
+      <ScrollRevealSection className="space-y-10 mt-16">
+        <div className="flex items-center justify-between border-b border-outline-variant/15 pb-4">
+          <div className="space-y-1">
+            <h2 className="text-3xl md:text-5xl font-black text-on-surface flex items-center gap-3 tracking-tight font-sans">
+              Epic Fantasy
+            </h2>
+            <p className="text-on-surface-variant font-bold text-[10px] sm:text-xs uppercase tracking-[0.3em] font-sans pl-1">Magic, myths, & legends</p>
+          </div>
+          <Link href="/search?genres=10" className="p-4 bg-surface-container border border-outline-variant/15 rounded-[12px] text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-all group hidden sm:block">
+            <ChevronRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+        
+        <StaggerGrid className="grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-6 md:gap-8">
+          {fantasyAnime.data.slice(0, 6).map((anime) => (
             <AnimeCard key={anime.mal_id} anime={anime} />
           ))}
         </StaggerGrid>

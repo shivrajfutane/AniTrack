@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
+import Image from 'next/image'
 import { 
   morphHamburger, 
   openMobileDrawer, 
@@ -96,8 +97,8 @@ export function Sidebar() {
         className="md:hidden fixed top-0 w-full z-50 h-[64px] border-b border-white/5 bg-[#09090B]/80 backdrop-blur-xl flex items-center justify-between px-4 transition-all"
       >
         <Link href="/" className="flex items-center gap-2">
-          <div className="h-8 w-8 bg-accent rounded-lg flex items-center justify-center shadow-glow">
-            <Tv className="text-white h-4 w-4" />
+          <div className="h-8 w-8 relative flex items-center justify-center">
+            <Image src="/logo-fox2.png" alt="AniTrack Fox Logo" fill className="object-contain" />
           </div>
           <span 
             className="font-black text-white text-base tracking-tighter uppercase italic font-syne"
@@ -119,9 +120,9 @@ export function Sidebar() {
       <div id="mobile-drawer" className="fixed inset-0 z-[60] hidden flex">
         <div id="drawer-backdrop" onClick={handleMobileToggle} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
         <div id="mobile-drawer-panel" className="relative w-[280px] h-full bg-surface border-r border-white/10 flex flex-col p-6 shadow-2xl glass-elevated">
-          <div className="flex items-center gap-4 mb-10">
-             <div className="h-10 w-10 bg-accent rounded-xl flex items-center justify-center shadow-glow">
-               <Tv className="text-white h-5 w-5" />
+          <div className="flex items-center gap-3 mb-10 pl-2">
+             <div className="h-10 w-10 relative flex items-center justify-center">
+               <Image src="/logo-fox2.png" alt="AniTrack Fox Logo" fill className="object-contain" />
              </div>
              <span className="font-black text-xl italic uppercase font-syne">AniTrack</span>
           </div>
@@ -130,19 +131,23 @@ export function Sidebar() {
               <Link key={item.name} href={item.href} onClick={handleMobileToggle}
                 className={cn(
                   "flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all",
-                  pathname === item.href ? "bg-accent/10 border-l-4 border-accent text-accent" : "text-white/60 hover:text-white hover:bg-white/5"
+                  pathname === item.href ? "bg-surface-container-low text-primary" : "text-text-subtle hover:text-white hover:bg-surface-container-low"
                 )}
               >
                 <item.icon className="h-5 w-5" />
-                <span className="font-syne">{item.name}</span>
+                <span className="font-sans tracking-tight">{item.name}</span>
               </Link>
             ))}
           </div>
           <div className="mt-auto pt-6 border-t border-white/5">
              {user ? (
                <div className="p-3 bg-white/5 rounded-2xl flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center font-black text-white italic">
-                    {user.email?.charAt(0).toUpperCase()}
+                  <div className="h-10 w-10 rounded-full bg-surface-container-highest relative overflow-hidden flex items-center justify-center font-black text-white italic border border-white/10">
+                    {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+                      <Image src={user.user_metadata?.avatar_url || user.user_metadata?.picture} alt="Avatar" fill className="object-cover" />
+                    ) : (
+                      user.email?.charAt(0).toUpperCase()
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-accent uppercase tracking-widest">Logged In</p>
@@ -154,7 +159,7 @@ export function Sidebar() {
                </div>
              ) : (
                <Link href="/login" onClick={handleMobileToggle}>
-                 <Button className="w-full bg-accent text-white rounded-2xl h-14 font-black uppercase font-syne italic">
+                 <Button className="w-full bg-primary text-on-primary rounded-2xl h-14 font-black uppercase tracking-wider">
                    Sign In
                  </Button>
                </Link>
@@ -167,19 +172,19 @@ export function Sidebar() {
         initial={{ width: 260 }}
         animate={{ width: sidebarExpanded ? 260 : 72 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="hidden md:flex fixed inset-y-0 left-0 z-50 bg-[#09090B] border-r border-white/5 flex-col noise-overlay"
+        className="hidden md:flex fixed inset-y-0 left-0 z-50 bg-background border-r border-transparent flex-col noise-overlay"
       >
         <div className="p-4 flex items-center h-[88px] relative z-20">
-          <div className="flex items-center gap-4 overflow-hidden pl-2">
-            <div className="h-10 w-10 flex-shrink-0 bg-accent rounded-xl flex items-center justify-center shadow-glow border border-accent-light/20 relative">
-              <Tv className="text-white h-5 w-5" />
+          <div className="flex items-center gap-3 overflow-hidden pl-2">
+            <div className="h-10 w-10 flex-shrink-0 relative flex items-center justify-center">
+              <Image src="/logo-fox2.png" alt="AniTrack Fox Logo" fill className="object-contain drop-shadow-[0_0_10px_rgba(124,58,237,0.5)]" />
             </div>
             <motion.span 
               initial={{ opacity: 1 }}
               animate={{ opacity: sidebarExpanded ? 1 : 0 }}
-              className="font-black text-xl tracking-tighter uppercase italic font-syne gradient-text whitespace-nowrap"
+              className="font-black text-2xl tracking-tighter uppercase italic font-syne text-white truncate w-full"
             >
-              AniTrack
+              Ani<span className="text-accent drop-shadow-[0_0_10px_rgba(124,58,237,0.5)]">Track</span>
             </motion.span>
           </div>
           
@@ -196,31 +201,34 @@ export function Sidebar() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/5 space-y-4 relative z-20">
+        <div className="p-4 border-t border-transparent space-y-4 relative z-20">
           {user ? (
-            <div className={cn("flex items-center gap-3 transition-all", sidebarExpanded ? "p-3 rounded-2xl bg-white/5 border border-white/5" : "justify-center")}>
-              <div className="h-10 w-10 relative overflow-hidden rounded-full flex-shrink-0 flex items-center justify-center bg-surface">
-                <div className="absolute inset-0 animate-spin" style={{ background: "conic-gradient(from 0deg, transparent 0 340deg, #7C3AED 360deg)" }} />
-                <div className="absolute inset-[2px] rounded-full bg-elevated flex items-center justify-center">
-                   <span className="font-black text-white italic text-sm">{user.email?.charAt(0).toUpperCase()}</span>
-                </div>
+            <div className={cn("flex items-center gap-3 transition-all", sidebarExpanded ? "p-3 rounded-2xl bg-surface-container-low" : "justify-center")}>
+              <div className="h-10 w-10 relative overflow-hidden rounded-full flex-shrink-0 flex items-center justify-center bg-surface border border-white/10">
+                {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+                  <Image src={user.user_metadata?.avatar_url || user.user_metadata?.picture} alt="Avatar" fill className="object-cover" />
+                ) : (
+                  <div className="absolute inset-[2px] rounded-full bg-surface-container-highest flex items-center justify-center">
+                     <span className="font-black text-white text-sm">{user.email?.charAt(0).toUpperCase()}</span>
+                  </div>
+                )}
               </div>
               
               {sidebarExpanded && (
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-none mb-1">Signed In</p>
+                  <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-1">Signed In</p>
                   <p className="text-sm font-bold text-white truncate">{user.email?.split('@')[0]}</p>
                 </div>
               )}
               {sidebarExpanded && (
-                <button onClick={() => supabase.auth.signOut()} className="p-2 text-white/30 hover:text-red-400 rounded-xl transition-all">
+                <button onClick={() => supabase.auth.signOut()} className="p-2 text-text-subtle hover:text-red-400 rounded-xl transition-all">
                   <LogOut className="h-4 w-4" />
                 </button>
               )}
             </div>
           ) : (
             <Link href="/login">
-              <Button onClick={handleRipple} className={cn("w-full bg-accent text-white transition-all font-syne uppercase tracking-widest italic shadow-glow", sidebarExpanded ? "h-12 rounded-xl text-xs" : "h-10 w-10 p-0 rounded-xl text-[10px]")}>
+              <Button onClick={handleRipple} className={cn("w-full transition-all font-sans uppercase tracking-widest bg-primary text-on-primary", sidebarExpanded ? "h-12 rounded-xl text-xs" : "h-10 w-10 p-0 rounded-xl text-[10px]")}>
                 {sidebarExpanded ? "Sign In" : "IN"}
               </Button>
             </Link>
@@ -235,21 +243,21 @@ function NavItem({ item, isActive, expanded }: { item: any; isActive: boolean; e
   const hoverProps = useMagneticHover<HTMLDivElement>(0.2)
   return (
     <Link href={item.href}>
-      <div className={cn("flex items-center relative group h-12 rounded-xl transition-colors", isActive ? "text-white" : "text-white/40 hover:text-white")}>
+      <div className={cn("flex items-center relative group h-12 rounded-xl transition-colors", isActive ? "text-white" : "text-text-subtle hover:text-white")}>
         {isActive && (
-          <motion.div layoutId="active-nav-pill" className="absolute inset-0 bg-accent/15 rounded-xl border border-accent/20" transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+          <motion.div layoutId="active-nav-pill" className="absolute inset-0 bg-surface-container-low rounded-xl" transition={{ type: "spring", stiffness: 300, damping: 30 }} />
         )}
         <div ref={isActive ? undefined : hoverProps.ref as any} {...(isActive ? {} : hoverProps.bind())} className="h-12 w-12 flex items-center justify-center relative z-10 shrink-0">
           <motion.div style={isActive ? {} : hoverProps.style as any}>
-             <item.icon className={cn("h-5 w-5 transition-transform", isActive ? "scale-110 text-accent glow-violet" : "group-hover:scale-110")} />
+             <item.icon className={cn("h-5 w-5 transition-transform", isActive ? "scale-110 text-primary" : "group-hover:scale-110")} />
           </motion.div>
         </div>
         {expanded && (
-          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-syne font-bold text-sm ml-2 relative z-10">
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-sans font-bold text-sm ml-2 relative z-10 tracking-tight">
             {item.name}
           </motion.span>
         )}
-        {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-accent rounded-r-lg shadow-glow z-10" />}
+        {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-lg z-10" />}
       </div>
     </Link>
   )

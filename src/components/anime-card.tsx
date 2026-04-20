@@ -31,7 +31,7 @@ export function AnimeCard({ anime, className }: AnimeCardProps) {
         )}
       >
         {/* Poster */}
-        <div className="relative aspect-[3/4] overflow-hidden rounded-xl border border-white/5 shadow-card transition-all duration-300">
+        <div className="relative aspect-[3/4] overflow-hidden rounded-[16px] bg-surface-container-low transition-all duration-300">
           <Image
             src={anime.images.webp.large_image_url || anime.images.webp.image_url}
             alt={anime.title}
@@ -45,7 +45,7 @@ export function AnimeCard({ anime, className }: AnimeCardProps) {
           {/* Hover Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-20">
             <div className="flex flex-wrap items-center gap-2 mb-1 opacity-0 translate-y-4 group-hover:animate-page-entry group-hover:opacity-100" style={{ animationDelay: '50ms' }}>
-              <span className="bg-accent/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-accent/20 font-spaceGrotesk text-white">
+              <span className="bg-primary/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-on-surface">
                 {anime.type || 'TV'}
               </span>
               <span className="text-[11px] text-white/80 font-mono">
@@ -63,7 +63,7 @@ export function AnimeCard({ anime, className }: AnimeCardProps) {
                 trigger={
                   <Button
                     size="sm"
-                    className="flex-1 bg-accent hover:bg-accent-dark text-white border-0 rounded-lg font-bold text-xs h-9 shadow-glow"
+                    className="flex-1 bg-primary text-on-primary hover:bg-primary-container rounded-[12px] font-bold text-xs h-9"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     ADD
@@ -73,7 +73,7 @@ export function AnimeCard({ anime, className }: AnimeCardProps) {
               <Button
                 size="sm"
                 variant="outline"
-                className="h-9 px-3 rounded-lg border-white/20 bg-white/5 text-white hover:bg-white/10 text-[10px] font-black uppercase tracking-widest"
+                className="h-9 px-3 rounded-[12px] ghost-border bg-transparent text-on-surface hover:bg-surface-container-highest text-[10px] font-black uppercase tracking-widest"
                 onClick={(e) => { e.stopPropagation(); setModalOpen(true) }}
               >
                 Info
@@ -90,19 +90,17 @@ export function AnimeCard({ anime, className }: AnimeCardProps) {
           )}
         </div>
 
-        {/* Glow Effect */}
-        <div className="absolute inset-0 bg-accent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl blur-2xl -z-10 mix-blend-plus-lighter pointer-events-none mt-2 mx-1" style={{ width: 'calc(100% - 8px)', height: 'calc(100% - 40px)' }} />
 
         {/* Info Section */}
-        <div className="card-info p-3 flex-1 flex flex-col justify-between z-10 w-full bg-transparent">
-          <h3 className="text-sm font-semibold text-text line-clamp-2 leading-snug transition-colors group-hover:text-accent font-syne">
+        <div className="card-info p-3 flex-1 flex flex-col justify-between z-10 w-full bg-transparent group-hover:bg-surface-container transition-colors rounded-b-[16px]">
+          <h3 className="text-sm font-semibold text-text line-clamp-2 leading-snug transition-colors group-hover:text-primary font-sans tracking-tight">
             {anime.title_english || anime.title}
           </h3>
 
           <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/10">
             <div className="flex gap-1.5 flex-wrap">
               {anime.genres?.slice(0, 1).map((genre: any) => (
-                <span key={genre.mal_id} className="text-[10px] text-[--color-pink] uppercase font-bold tracking-wider">
+                <span key={genre.mal_id} className="text-[10px] text-tertiary uppercase font-bold tracking-wider">
                   {genre.name}
                 </span>
               ))}
