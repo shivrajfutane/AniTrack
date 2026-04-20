@@ -59,8 +59,8 @@ export default async function MyListPage({
             </h1>
           </div>
           <p className="text-text-subtle font-medium max-w-lg leading-relaxed font-spaceGrotesk">
-            A secured historical record of your journey through the broadcast stream. 
-            <span className="text-accent ml-2">[{list?.length || 0} Nodes Indexed]</span>
+            A complete record of your anime journey and watching history. 
+            <span className="text-accent ml-2">[{list?.length || 0} Anime Tracked]</span>
           </p>
         </div>
         
@@ -131,7 +131,7 @@ export default async function MyListPage({
            <div className="p-6 rounded-3xl bg-accent/5 border border-accent/10 space-y-4 shadow-glow relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5 noise-overlay mix-blend-overlay pointer-events-none" />
               <h4 className="text-xs font-black text-white uppercase tracking-widest font-syne relative z-10">Vault Security</h4>
-              <p className="text-[10px] text-text-subtle leading-relaxed font-spaceGrotesk relative z-10">Your collection is encrypted and synced across all biometric nodes.</p>
+              <p className="text-[10px] text-text-subtle leading-relaxed font-spaceGrotesk relative z-10">Your collection is synced across all your devices and safely stored.</p>
               <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden relative z-10">
                 <div className="h-full bg-accent w-2/3 shadow-[0_0_10px_rgba(124,58,237,0.8)]" />
               </div>
@@ -144,7 +144,7 @@ export default async function MyListPage({
               {filteredList?.map((item) => (
                 <div 
                   key={item.id}
-                  className="anime-card group relative bg-surface border border-white/5 rounded-3xl overflow-hidden hover:border-accent/40 shadow-card transition-all duration-300"
+                  className="anime-card group relative bg-surface/90 border border-white/10 rounded-[32px] overflow-hidden hover:border-accent/40 shadow-card transition-all duration-500 glass-elevated"
                 >
                   <div className="flex h-56">
                     {/* Poster */}
@@ -155,13 +155,13 @@ export default async function MyListPage({
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-surface" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-surface/5 to-surface" />
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 p-5 flex flex-col justify-between overflow-hidden relative z-10">
                        <div className="space-y-2">
-                          <h3 className="font-black text-white line-clamp-2 leading-tight group-hover:text-accent transition-colors tracking-tighter text-lg uppercase italic font-syne">
+                          <h3 className="font-bold text-white line-clamp-2 leading-tight group-hover:text-accent transition-colors tracking-tight text-xl font-syne">
                             {item.anime_title}
                           </h3>
                           <div className="flex items-center gap-3">
@@ -171,14 +171,14 @@ export default async function MyListPage({
 
                        <div className="space-y-3">
                           <div className="flex justify-between items-end">
-                             <span className="text-[10px] font-black text-text-subtle uppercase tracking-widest font-spaceGrotesk">Temporal Link</span>
+                             <span className="text-[10px] font-black text-accent uppercase tracking-widest font-spaceGrotesk">Progress</span>
                              <span className="text-xs font-bold text-white font-mono bg-white/5 px-2 py-1 rounded-md border border-white/10">
                                {item.episodes_watched} <span className="text-white/20">/</span> {item.total_episodes || '??'}
                              </span>
                           </div>
                           <div className="h-1.5 w-full bg-black/50 rounded-full overflow-hidden p-[1px] border border-white/5">
                              <div 
-                               className="h-full bg-gradient-to-r from-accent/50 to-accent rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(124,58,237,0.8)]" 
+                               className="h-full bg-gradient-to-r from-accent to-accent-light rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(124,58,237,1)]" 
                                style={{ width: `${item.total_episodes ? (item.episodes_watched / item.total_episodes) * 100 : 0}%` }}
                              />
                           </div>
@@ -202,7 +202,7 @@ export default async function MyListPage({
                        <Button 
                          className="w-full bg-accent text-white rounded-xl font-black uppercase text-[10px] tracking-widest h-11 shadow-glow transition-all italic font-syne hover:bg-accent-light"
                        >
-                         Increment Broadcast
+                          +1 Episode
                        </Button>
                      </form>
                      <form action={async () => {
@@ -213,7 +213,7 @@ export default async function MyListPage({
                          variant="outline"
                          className="h-11 w-11 text-white/40 hover:text-red-400 border-white/10 glass hover:bg-red-400/20 hover:border-red-400/30 rounded-xl transition-all"
                        >
-                         <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-4 w-4" />
                        </Button>
                      </form>
                   </div>
@@ -229,12 +229,12 @@ export default async function MyListPage({
                     <Library className="h-10 w-10 text-accent opacity-60" />
                  </div>
                  <div className="space-y-2">
-                    <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Null Sequence</h3>
-                    <p className="text-text-subtle font-medium font-spaceGrotesk">No archived records found for this temporal status.</p>
+                    <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter font-syne">Empty Vault</h3>
+                    <p className="text-text-subtle font-medium font-spaceGrotesk">Your personal collection is waiting for its first entry.</p>
                  </div>
                  <Link href="/search">
                   <Button className="bg-accent text-white rounded-2xl px-10 h-14 font-black uppercase text-xs tracking-widest shadow-glow italic font-syne drop-shadow-[0_0_15px_rgba(124,58,237,0.5)]">
-                    Scan Broadcasts
+                    Browse Anime
                   </Button>
                  </Link>
               </ScrollRevealSection>
